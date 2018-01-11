@@ -1,4 +1,4 @@
-##get,post,put.. allows
+##get,post,put.. allows##
 composer require barryvdh/laravel-cors
 run
 https://github.com/barryvdh/laravel-cors
