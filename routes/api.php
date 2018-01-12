@@ -12,3 +12,8 @@ Route::post('/signup', ['uses' => 'UserController@create']);
 Route::delete('/users/delete/{id}', ['uses' => 'UserController@delete']);
 
 Route::get('/users/{id}', ['uses' => 'UserController@get']);
+
+Route::post('/users/login', ['uses' => 'UserController@index']);
+
+
+

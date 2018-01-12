@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->increments('id')->unsigned();
+            $table->increments('id')->unsigned(); // user_id olarak değiştirilecek, değiştirilken bir problem olustu askıya alındı.
             $table->string('firstname');
             $table->string('lastname');
             $table->string('username');
