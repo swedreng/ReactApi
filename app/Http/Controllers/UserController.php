@@ -55,6 +55,12 @@ class UserController extends Controller {
         return $query;
     }
 
+    public function getUser(){
+        $model = new Users;
+        $query = $model->get();
+        return $query;
+    }
+
     public function delete($id){
         $query = Users::findOrFail($id);
         $result = $query->delete($id);
