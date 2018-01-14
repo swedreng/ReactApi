@@ -16,10 +16,9 @@ class UserController extends Controller {
 
             $query = $model->where('username' ,'=', $username)->first();
             $query2 = $model->where('password' ,'=', $password)->first();
-           
-            if(count($query) > 0){
-                if(count($query2) > 0){
-
+            
+            if($query){
+                if($query2){
                     return [
                         'message' => 'Basarıyla giriş yaptınız.',
                         'success' => true];
