@@ -13,12 +13,12 @@ class UserController extends Controller {
         $password = $request->input('password');
        
         if($username && $password){
+            $user_info = $model->where('username', "=", $username)->get();
+            $query = $model->where('username' , '=', $username)->first();
 
-            $query = $model->where('username' ,'=', $username)->first();
-            $query2 = $model->where('password' ,'=', $password)->first();
-            
             if($query){
-                if($query2){
+                $passwordSolved = $model->hashCheck($password, $user_info[0]["password"]);
+                if($passwordSolved){
                     return [
                         'message' => 'Basarıyla giriş yaptınız.',
                         'success' => true];
@@ -26,16 +26,14 @@ class UserController extends Controller {
                     return [
                         'message' => 'Girdiğiniz sifre yanlış lütfen tekrar deneyiniz.',
                         'success' => false];
-                }
+                } 
             }else{
                 return [
-                    'message' => 'Girdiğiniz kullanıcı adı yanlış lütfen tekrar deneyiniz.',
+                    'message' => 'Girdiğiniz kullanıcı adına kayıt bulunamadı.',
                     'success' => false];
-            }            
+            }                  
         }    
     }
-
-    
 
     public function create(Request $request){
         $model = new Users;
