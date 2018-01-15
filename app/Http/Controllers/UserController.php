@@ -63,9 +63,11 @@ class UserController extends Controller {
         $query = Users::findOrFail($id);
         $result = $query->delete($id);
         if($result){
-            return ['sonuc' => 'Basariyla kullanıcıyı sildiniz.'];
+            return ['message' => 'Basariyla kullanıcıyı sildiniz.',
+                    'success' => true];
         }else{
-            return ['sonuc' => 'Kullanıcıyı silerken bir problem olustu.'];
+            return ['message' => 'Kullanıcıyı silerken bir problem olustu.',
+                    'success' => false];
         }
     }
 }
