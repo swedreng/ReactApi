@@ -3,19 +3,19 @@
 use Illuminate\Http\Request;
 
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
+Route::post('/users/login', ['uses' => 'UserController@index']);
 Route::post('/signup', ['uses' => 'UserController@create']);
 
+
+Route::group(['middleware' => ['jwt.auth']], function () {
+    
 Route::delete('/users/delete/{id}', ['uses' => 'UserController@delete']);
 
 Route::get('/users/{id}', ['uses' => 'UserController@get']);
 
-Route::post('/users', ['uses' => 'UserController@getUser']);
-
-Route::post('/users/login', ['uses' => 'UserController@index']);
+Route::get('/users', ['uses' => 'UserController@getUser']);
 
 
+});
 
