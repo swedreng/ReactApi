@@ -1,10 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 use JWTAuth;
+use Validator;
 use App\Models\Users;
 use App\Http\Controllers\Controller;  
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
+use App\Http\Requests\SignupPostRequest;
+use Illuminate\Http\Validation\ValidEmail;
 
 class UserController extends Controller {
 
@@ -45,7 +48,6 @@ class UserController extends Controller {
                     return [
                             'message' => 'Sistemle ilgili bir sorun var lütfen daha sonra tekrar deneyiniz.',
                             'success' => false];
-                    
                 }else{
                     return [
                         'message' => 'Girdiğiniz sifre yanlış lütfen tekrar deneyiniz.',
@@ -58,31 +60,26 @@ class UserController extends Controller {
             } 
     }
 
+    public function create(SignupPostRequest $request){
 
-    public function create(Request $request){
-        $model = new Users;
-        $query = $model->create($request->all());
-        $result = $query->findOrFail($query->id);
-        if($result){
-            return ['message' => 'Basarıyla kayıt oldunuz.',
-                    'success' => true];
-        }else{
-            return ['message' => 'Kayıt olamadınız bir sorun olustu lütfen daha sonra tekrar deneyiniz.',
-                    'success' => false];
+            $model = new Users;
+            $query = $model->create($request->all());
+            $result = $query->findOrFail($query->id);
+            if($result){
+                return ['message' => 'Basarıyla kayıt oldunuz.',
+                        'success' => true];
+            }else{
+                return ['message' => 'Kayıt olamadınız bir sorun olustu lütfen daha sonra tekrar deneyiniz.',
+                        'success' => false];
+            }
         }
-    }
-
+        
     public function get($id){
         $query = Users::findOrFail($id);
         return $query;
     }
 
     public function getUser(Request $request){
-       
-        //JWTAuth::setToken($request->input('token'));
-        //$user = JWTAuth::toUser();
-        //return response()->json($user);
-
         $model = new Users;
         $query = $model->get();
         return $query;
@@ -99,4 +96,5 @@ class UserController extends Controller {
                     'success' => false];
         }
     }
+ 
 }

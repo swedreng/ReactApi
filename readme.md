@@ -2,4 +2,5 @@
 run->(composer require barryvdh/laravel-cors)
 this here do it step step->https://github.com/barryvdh/laravel-cors
 and run->php artisan vendor:publish --provider="Barryvdh\Cors\ServiceProvider"
+//php artisan make:request StoreBlogPostRequest// -> Validation yapmak için yükle
 
