@@ -36,8 +36,9 @@ class UserController extends Controller {
                             'message' => 'Basarıyla giriş yaptınız.',
                             'success' => true,
                             'token' => $token,
-                            'username' =>$username,
-                            'role' => $user_info[0]["rank"]];
+                            'username' => $username,
+                            'role' => $user_info[0]["rank"],
+                            'user_id' => $user_info[0]["id"]];
 
                     }catch (JWTException $e) {
                         // something went wrong whilst attempting to encode the token
