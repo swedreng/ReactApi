@@ -79,9 +79,10 @@ class UserController extends Controller {
         $query = Users::findOrFail($id);
         return $query;
     }
-    public function getuserinfoUpdate(Request $request){
+    public function userinfoUpdate(Request $request){
         $model = new Users;
-        
+        $token = $request->header('Authorization');
+        return $token;
     }
 
     public function getUser(Request $request){
