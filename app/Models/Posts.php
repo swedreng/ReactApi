@@ -8,10 +8,10 @@ class Posts extends Model {
     protected $softDelete = true;
     protected $table = 'content';
     protected $primaryKey = 'content_id';
-    protected $fillable = ['id','writing','nameusername','image'];
+    protected $fillable = ['id','writing','image'];
     protected $hidden = [];
 
-    public function UsersPosts() {
+    public function User() {
 		return $this->hasOne('App\Models\Users', 'id', 'id');
 	}
     

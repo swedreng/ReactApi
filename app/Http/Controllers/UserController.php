@@ -75,9 +75,13 @@ class UserController extends Controller {
             }
         }
         
-    public function get($id){
+    public function getuserInfo($id){
         $query = Users::findOrFail($id);
         return $query;
+    }
+    public function getuserinfoUpdate(Request $request){
+        $model = new Users;
+        
     }
 
     public function getUser(Request $request){
