@@ -3,11 +3,17 @@ namespace App\Http\Controllers;
 use JWTAuth;
 use Validator;
 use App\Models\Users;
-use App\Http\Controllers\Controller;  
+
+use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use App\Http\Requests\SignupPostRequest;
 use Illuminate\Http\Validation\ValidEmail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File; 
+use Illuminate\Http\Response;
+use App\Http\Requests\FileUploadPostRequest; 
+
 
 class UserController extends Controller {
 
@@ -79,10 +85,46 @@ class UserController extends Controller {
         $query = Users::findOrFail($id);
         return $query;
     }
+    public function mypic(Request $request){
+        $model = new Users;
+        $user = JWTAuth::parseToken()->authenticate();
+        $model = $model->findOrFail($user->id);
+
+        return ['result' => (!isset($model->pp) ? $model->pp : null)];
+        
+    }
     public function userinfoUpdate(Request $request){
         $model = new Users;
-        $token = $request->header('Authorization');
-        return $token;
+        $user_id = $request->input("user_id");
+        $user = JWTAuth::parseToken()->authenticate();
+        if($user_id == $user->id){
+            $query = $model->findorFail($user->id);
+            $result = $query->update($request->all());
+            return ['message' => "Basarıyla bilgilerinizi güncellediniz.",
+                    'success' => true];
+        }else{
+            return ['message' => "Bilgilerinizi güncellenirken bir problem oluştu.",
+                    'success' => false];
+        }
+    }
+    public function ppCreate(FileUploadPostRequest $request){
+        
+        $files = $request->file('files');
+        $extension = $files->getClientOriginalExtension(); //jpg
+        Storage::disk('public')->put($files->getClientOriginalName(), File::get($files));
+        $model = new Users;
+        $user = JWTAuth::parseToken()->authenticate();
+        $model = $model->findOrFail($user->id);
+        $model->pp = Storage::url($files->getClientOriginalName());
+        $result = $model->save();
+
+        if($result){
+            return ['message' => 'Profil resminiz basarıyla güncellendi.',
+                    'success' => true];
+        }else{
+            return ['message' => 'Profil resminiz güncellenirken bir sorun olustu.',
+                    'success' => false];
+        }
     }
 
     public function getUser(Request $request){

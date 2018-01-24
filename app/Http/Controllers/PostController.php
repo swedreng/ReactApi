@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\Users;
 use App\Models\Posts;
-use App\Http\Controllers\Controller; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -38,9 +38,7 @@ class PostController extends Controller {
       
     }
         
-    public function get($id){
-        
-    }
+ 
 
     public function getUser(Request $request){
        
