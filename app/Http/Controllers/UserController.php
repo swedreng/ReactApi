@@ -89,8 +89,13 @@ class UserController extends Controller {
         $model = new Users;
         $user = JWTAuth::parseToken()->authenticate();
         $model = $model->findOrFail($user->id);
-
-        return ['result' => (!isset($model->pp) ? $model->pp : null)];
+        if(isset($model->pp)){
+            return ['result' => $model->pp];
+        }
+        else{
+            return ['result' => null];
+        }
+        
         
     }
     public function userinfoUpdate(Request $request){
