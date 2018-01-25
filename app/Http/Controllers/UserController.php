@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 use JWTAuth;
 use Validator;
 use App\Models\Users;
-
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -37,14 +36,21 @@ class UserController extends Controller {
                                 'message' => 'Sistemle ilgili bir problem var lütfen daha sonra tekrar deneyiniz.',
                                 'success' => false];
                         }
-
+                        if(isset($user_info[0]["pp"])){
+                            $env = env('APP_URL');
+                            $image = $env."".$user_info[0]["pp"];
+                        }
+                        else{
+                            $image = null;
+                        }
                         return [
                             'message' => 'Basarıyla giriş yaptınız.',
                             'success' => true,
                             'token' => $token,
                             'username' => $username,
                             'role' => $user_info[0]["rank"],
-                            'user_id' => $user_info[0]["id"]];
+                            'user_id' => $user_info[0]["id"],
+                            'user_pp' => $image];
 
                     }catch (JWTException $e) {
                         // something went wrong whilst attempting to encode the token
@@ -102,11 +108,13 @@ class UserController extends Controller {
         $model = new Users;
         $user_id = $request->input("user_id");
         $user = JWTAuth::parseToken()->authenticate();
+        
         if($user_id == $user->id){
             $query = $model->findorFail($user->id);
             $result = $query->update($request->all());
             return ['message' => "Basarıyla bilgilerinizi güncellediniz.",
-                    'success' => true];
+                    'success' => true
+                   ];
         }else{
             return ['message' => "Bilgilerinizi güncellenirken bir problem oluştu.",
                     'success' => false];
@@ -122,10 +130,19 @@ class UserController extends Controller {
         $model = $model->findOrFail($user->id);
         $model->pp = Storage::url($files->getClientOriginalName());
         $result = $model->save();
+        $user_info = $model->where('username', "=", $user->username)->get();
+        if(isset($user_info[0]["pp"])){
+            $env = env('APP_URL');
+            $image = $env."".$user_info[0]["pp"];
+        }
+        else{
+            $image = null;
+        }
 
         if($result){
             return ['message' => 'Profil resminiz basarıyla güncellendi.',
-                    'success' => true];
+                    'success' => true,
+                    'user_pp' => $image ];
         }else{
             return ['message' => 'Profil resminiz güncellenirken bir sorun olustu.',
                     'success' => false];
