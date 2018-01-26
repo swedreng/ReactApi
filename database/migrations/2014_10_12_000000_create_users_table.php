@@ -20,6 +20,9 @@ class CreateUsersTable extends Migration
             $table->string('username');
             $table->string('password');
             $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('adress')->nullable();
+            $table->string('personalwriting')->nullable();
             $table->string('pp')->nullable();
             $table->integer('rank')->default(0);
             $table->rememberToken();

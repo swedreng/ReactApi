@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File; 
 use Illuminate\Http\Response;
 use App\Http\Requests\FileUploadPostRequest; 
+use App\Http\Requests\UserUpdate; 
 
 
 class UserController extends Controller {
@@ -28,7 +29,8 @@ class UserController extends Controller {
         return $query;
     }
 
-    public function update(SignupPostRequest $request){ // +
+    public function update(UserUpdate $request){ // +
+        
         $model = new Users;
         $user = JWTAuth::parseToken()->authenticate();
         $query = $model->findorFail($user->id);
