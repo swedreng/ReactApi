@@ -28,7 +28,7 @@ class UserController extends Controller {
         return $query;
     }
 
-    public function update(Request $request){ // +
+    public function update(SignupPostRequest $request){ // +
         $model = new Users;
         $user = JWTAuth::parseToken()->authenticate();
         $query = $model->findorFail($user->id);
