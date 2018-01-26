@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 use App\Models\Users;
 use App\Models\Posts;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -12,21 +14,19 @@ class PostController extends Controller {
 
     public function index(Request $request){
 
-        $model = new Posts;
-        $model = $model->with('User');
-        return $model->get();
+        //
        
     }
 
-    public function create(FileUploadPostRequest $request){
-      
+    public function createpp(FileUploadPostRequest $request){ // +
+        
+        $model = new Posts;
         $writing = $request->input('writing');
-        $id = $request->input('id');
         $files = $request->file('files');
         $extension = $files->getClientOriginalExtension(); //jpg
         Storage::disk('public')->put($files->getClientOriginalName(), File::get($files));
-        $model = new Posts;
-        $model->id = $id;
+        $user = JWTAuth::parseToken()->authenticate();
+        $model->id = $user->id;
         $model->writing = $writing;
         $model->image = Storage::url($files->getClientOriginalName());
         $result = $model->save();
@@ -38,8 +38,6 @@ class PostController extends Controller {
       
     }
         
- 
-
     public function getUser(Request $request){
        
     }

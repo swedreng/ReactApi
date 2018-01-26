@@ -18,109 +18,26 @@ class UserController extends Controller {
 
     public function index(Request $request){
        
-        $model = new Users;
-        $username = $request->input('username');
-        $password = $request->input('password');
-       
-        if($username && $password){
-            
-            $query = $model->where('username' , '=', $username)->first();
-            $user_info = $model->where('username', "=", $username)->get();
-
-            if($query){
-                        $credentials = $request->all();
-                    try{
-                        $token = JWTAuth::attempt($credentials);
-                        if(!$token){
-                            return  [
-                                'message' => 'Sistemle ilgili bir problem var lütfen daha sonra tekrar deneyiniz.',
-                                'success' => false];
-                        }
-                        if(isset($user_info[0]["pp"])){
-                            $env = env('APP_URL');
-                            $image = $env."".$user_info[0]["pp"];
-                        }
-                        else{
-                            $image = null;
-                        }
-                        return [
-                            'message' => 'Basarıyla giriş yaptınız.',
-                            'success' => true,
-                            'token' => $token,
-                            'username' => $username,
-                            'role' => $user_info[0]["rank"],
-                            'user_id' => $user_info[0]["id"],
-                            'user_pp' => $image];
-
-                    }catch (JWTException $e) {
-                        // something went wrong whilst attempting to encode the token
-                        return [
-                            'message' => 'Kullanıcı adına token olusturulamadı.',
-                            'success' => false];
-                    }
-                    return [
-                            'message' => 'Sistemle ilgili bir sorun var lütfen daha sonra tekrar deneyiniz.',
-                            'success' => false];
-                }else{
-                    return [
-                        'message' => 'Girdiğiniz sifre yanlış lütfen tekrar deneyiniz.',
-                        'success' => false];
-                }
-            }else{
-                return [
-                    'message' => 'Girdiğiniz kullanıcı adına kayıt bulunamadı.',
-                    'success' => false];
-            } 
-    }
-
-    public function create(SignupPostRequest $request){
-
-            $model = new Users;
-            $query = $model->create($request->all());
-            $result = $query->findOrFail($query->id);
-            if($result){
-                return ['message' => 'Basarıyla kayıt oldunuz.',
-                        'success' => true];
-            }else{
-                return ['message' => 'Kayıt olamadınız bir sorun olustu lütfen daha sonra tekrar deneyiniz.',
-                        'success' => false];
-            }
-        }
         
-    public function getuserInfo($id){
-        $query = Users::findOrFail($id);
+    }
+  
+    public function get(){ // +
+        $model = new Users;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $model->findorFail($user->id);
         return $query;
     }
-    public function mypic(Request $request){
+
+    public function update(Request $request){ // +
         $model = new Users;
         $user = JWTAuth::parseToken()->authenticate();
-        $model = $model->findOrFail($user->id);
-        if(isset($model->pp)){
-            return ['result' => $model->pp];
-        }
-        else{
-            return ['result' => null];
-        }
-        
-        
-    }
-    public function userinfoUpdate(Request $request){
-        $model = new Users;
-        $user_id = $request->input("user_id");
-        $user = JWTAuth::parseToken()->authenticate();
-        
-        if($user_id == $user->id){
-            $query = $model->findorFail($user->id);
-            $result = $query->update($request->all());
+        $query = $model->findorFail($user->id);
+        $result = $query->update($request->all());
             return ['message' => "Basarıyla bilgilerinizi güncellediniz.",
-                    'success' => true
-                   ];
-        }else{
-            return ['message' => "Bilgilerinizi güncellenirken bir problem oluştu.",
-                    'success' => false];
-        }
+                    'success' => true];  
     }
-    public function ppCreate(FileUploadPostRequest $request){
+
+    public function pp(FileUploadPostRequest $request){ // +
         
         $files = $request->file('files');
         $extension = $files->getClientOriginalExtension(); //jpg
@@ -130,41 +47,28 @@ class UserController extends Controller {
         $model = $model->findOrFail($user->id);
         $model->pp = Storage::url($files->getClientOriginalName());
         $result = $model->save();
-        $user_info = $model->where('username', "=", $user->username)->get();
-        if(isset($user_info[0]["pp"])){
+        $user_info = $model->where('username', "=", $user->username)->first();
+        if(isset($user_info->pp)){
             $env = env('APP_URL');
-            $image = $env."".$user_info[0]["pp"];
+            $image = $env."".$user_info->pp;
         }
         else{
             $image = null;
         }
-
         if($result){
             return ['message' => 'Profil resminiz basarıyla güncellendi.',
                     'success' => true,
-                    'user_pp' => $image ];
+                    'user_pp' => $image];
         }else{
             return ['message' => 'Profil resminiz güncellenirken bir sorun olustu.',
                     'success' => false];
         }
     }
 
-    public function getUser(Request $request){
-        $model = new Users;
-        $query = $model->get();
-        return $query;
+    public function ppdelete(Request $request){
+       // yapılacak.
     }
 
-    public function delete($id){
-        $query = Users::findOrFail($id);
-        $result = $query->delete($id);
-        if($result){
-            return ['message' => 'Basariyla kullanıcıyı sildiniz.',
-                    'success' => true];
-        }else{
-            return ['message' => 'Kullanıcıyı silerken bir problem olustu.',
-                    'success' => false];
-        }
-    }
+   
  
 }
