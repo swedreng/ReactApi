@@ -4,6 +4,7 @@ use JWTAuth;
 use Validator;
 use App\Models\Users;
 use App\Models\Posts;
+use App\Models\Comments;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class MainController extends Controller {
 
     public function index(Request $request){
         $model = new Posts;
-        $model = $model->with('User');
+        $model = $model->with(['User', 'Comments']);
         return $model->get();
     }
 
@@ -34,13 +35,7 @@ class MainController extends Controller {
                             'message' => 'Bu kullanıcı adıyla şifre eşleşmiyor lütfen doğru bilgiler giriniz.',
                             'success' => false];
                     }
-                    if(isset($user_info->pp)){
-                        $env = env('APP_URL');
-                        $image = $env."".$user_info->pp;
-                    }
-                    else{
-                        $image = null;
-                    }
+                   
                         return [
                             'message' => 'Basarıyla giriş yaptınız.',
                             'success' => true,
@@ -48,7 +43,7 @@ class MainController extends Controller {
                             'username' => $username,
                             'role' => $user_info->rank,
                             'user_id' => $user_info->id,
-                            'user_pp' => $image];
+                            'user_pp' => $user_info->pp];
         
                 }catch (JWTException $e) {
                                 

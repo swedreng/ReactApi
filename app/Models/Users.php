@@ -18,5 +18,8 @@ class Users extends Model {
     public function hashCheck($req_password, $ser_password){
     	return Hash::check($req_password, $ser_password);
     }
+    public function getPpAttribute($pp){
+        return env('APP_URL').$pp;
+    }
     
 }

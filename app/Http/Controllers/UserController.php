@@ -50,17 +50,11 @@ class UserController extends Controller {
         $model->pp = Storage::url($files->getClientOriginalName());
         $result = $model->save();
         $user_info = $model->where('username', "=", $user->username)->first();
-        if(isset($user_info->pp)){
-            $env = env('APP_URL');
-            $image = $env."".$user_info->pp;
-        }
-        else{
-            $image = null;
-        }
+       
         if($result){
             return ['message' => 'Profil resminiz basarıyla güncellendi.',
                     'success' => true,
-                    'user_pp' => $image];
+                    'user_pp' => $user_info->pp];
         }else{
             return ['message' => 'Profil resminiz güncellenirken bir sorun olustu.',
                     'success' => false];
