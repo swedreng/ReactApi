@@ -26,8 +26,8 @@ class CommentController extends Controller {
     }
     public function commentUpdate(Request $request){
        $post_id = $request->input('post_id');
-       $model = new Comments;
-       $query = $model->where('postpicture_id', '=', $post_id)->get();
+       $model = new Posts;
+       $query = $model->with(['User', 'Comments','PostLike'])->where('postpicture_id', '=', $post_id)->first();
        return $query;
  
     }

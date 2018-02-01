@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
     Route::post('/login', ['uses' => 'MainController@login']); //+
     Route::post('/signup', ['uses' => 'MainController@signup']); // +
     //gets
-    Route::get('/posts', ['uses' => 'MainController@index']); // +
+     // +
 
 
 // Tokenli requestler 
 
 Route::group(['middleware' => ['jwt.auth']], function () {
+    
+    Route::get('/posts', ['uses' => 'MainController@index']);
    
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   
@@ -28,6 +30,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/user/deletepost', ['uses' => 'PostController@delete']); // yapılacak route u yapıldı.
     Route::post('/comment', ['uses' => 'CommentController@index']);
     Route::get('/comment', ['uses' => 'CommentController@commentUpdate']);
+    Route::post('/postlike', ['uses' => 'PostController@postLike']);
       // Tokensiz //
         // MainController //
     // POST /login => giriş yap // login // + 

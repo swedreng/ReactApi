@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\Users;
 use App\Models\Posts;
+use App\Models\PostLike;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -46,5 +47,39 @@ class PostController extends Controller {
        
     }
 
- 
+    public function postLike(Request $request){
+        $post_id = $request->input('post_id');
+        $model = new Posts;
+        $postlikeModel = new PostLike;
+        $user = JWTAuth::parseToken()->authenticate();
+        $result = $postlikeModel->where([['id', '=' , $user->id],['postpicture_id', '=' , $post_id]])->first();
+       
+        if(!is_null($result)){
+            if($result->likepost == 0){
+                $result->likepost = true;
+                $result->save();
+                $query = $model->findOrFail($post_id);
+                $query->like = $query->like + 1;
+                $result = $query->save();
+                return ['result' => false];
+            }else{
+                $result->likepost = false;
+                $result->save();
+                $query = $model->findOrFail($post_id);
+                $query->like = $query->like - 1;
+                $result = $query->save();
+                return ['result' => false];
+            }
+
+        }else{
+            $postlikeModel->postpicture_id = $post_id;
+            $postlikeModel->id = $user->id;
+            $postlikeModel->likepost = true;
+            $postlikeModel->save();
+            $query = $model->findOrFail($post_id);
+            $query->like = $query->like + 1;
+            $result = $query->save();
+            return ['result' => true];
+        } 
+    }
 }
