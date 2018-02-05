@@ -3,11 +3,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PostLike extends Model {
+class Like extends Model {
     use SoftDeletes;
     protected $softDelete = true;
-    protected $table = 'postlike';
-    protected $primaryKey = 'postlike_id';
+    protected $table = 'likes';
+    protected $primaryKey = 'like_id';
     protected $fillable = ['id','postpicture_id','likepost'];
     protected $hidden = [];
 

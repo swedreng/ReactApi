@@ -3,8 +3,8 @@ namespace App\Models;
 use JWTAuth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use App\Models\PostLike;
+
+use App\Models\Like;
 
 class Posts extends Model {
     use SoftDeletes;
@@ -15,18 +15,21 @@ class Posts extends Model {
     protected $hidden = [];
 
     protected $appends = [
-        'Isliked', 
-        'CommentCount'
+        'IslikedPost', 
+        'CommentCount',
     ];
   
     public function User() {
 		  return $this->hasOne('App\Models\Users', 'id', 'id');
     }
     public function Comments() {
-      return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderByRaw('comment_id DESC');
+      return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('comment_id','DESC');
     }
-    public function PostLike() {
-      return $this->hasMany('App\Models\PostLike', 'postpicture_id' , 'postpicture_id');
+    public function CommentBest() {
+      return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User');
+    }
+    public function Likes() {
+      return $this->hasMany('App\Models\Like', 'postpicture_id' , 'postpicture_id');
     }
     public function getImageAttribute($image){
       return env('APP_URL').$image;
@@ -35,18 +38,22 @@ class Posts extends Model {
     public function getCommentCountAttribute(){
       return $this->Comments()->count();
     }
+    public function getCommentAttribute(){
+      return $this->Comments()->orderBy('comment_id','DESC');
+    }
 
-    public function getIslikedAttribute(){
-      $model = new PostLike();
+    public function getIslikedPostAttribute(){
+      $model = new Like();
       $user = JWTAuth::parseToken()->authenticate();
         
-      $result = $model->where([['postpicture_id', '=', $this->postpicture_id],['id', '=', $user->id]])->first();
-
-      if($result && $result->likepost){
+      $result = $model->where([['postpicture_id', '=', $this->postpicture_id],['id', '=', $user->id],['kind' , '=' , 'post']])->first();
+      if($result && $result->like){
         return true;
       } else {
         return false;
       }
     }
+
+
     
 }

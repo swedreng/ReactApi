@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\Users;
 use App\Models\Posts;
-use App\Models\PostLike;
+use App\Models\Like;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -47,39 +47,46 @@ class PostController extends Controller {
        
     }
 
-    public function postLike(Request $request){
+    public function Like(Request $request){
         $post_id = $request->input('post_id');
+        $like_kind = $request->input('like_kind');
+        
         $model = new Posts;
-        $postlikeModel = new PostLike;
+        $likeModel = new Like;
         $user = JWTAuth::parseToken()->authenticate();
-        $result = $postlikeModel->where([['id', '=' , $user->id],['postpicture_id', '=' , $post_id]])->first();
-       
+        $result = $likeModel->where([['id', '=' , $user->id],['postpicture_id', '=' , $post_id],['kind', '=' , $like_kind]])->first();
+        
         if(!is_null($result)){
-            if($result->likepost == 0){
-                $result->likepost = true;
-                $result->save();
-                $query = $model->findOrFail($post_id);
-                $query->like = $query->like + 1;
-                $result = $query->save();
-                return ['result' => false];
-            }else{
-                $result->likepost = false;
-                $result->save();
-                $query = $model->findOrFail($post_id);
-                $query->like = $query->like - 1;
-                $result = $query->save();
-                return ['result' => false];
-            }
 
-        }else{
-            $postlikeModel->postpicture_id = $post_id;
-            $postlikeModel->id = $user->id;
-            $postlikeModel->likepost = true;
-            $postlikeModel->save();
+                if($result->like == 0){
+                    $result->like = true;
+                    $result->save();
+                    $query = $model->findOrFail($post_id);
+                    $query->like = $query->like + 1;
+                    $result = $query->save();
+                    return ['result' => false];
+                }else{
+                    $result->like = false;
+                    $result->save();
+                    $query = $model->findOrFail($post_id);
+                    $query->like = $query->like - 1;
+                    $result = $query->save();
+                    return ['result' => false];
+                }
+
+            }else{
+            $likeModel->postpicture_id = $post_id;
+            $likeModel->id = $user->id;
+            $likeModel->like = true;
+            $likeModel->kind = $like_kind;
+            $likeModel->comment_id = 0;
+            $likeModel->save();
             $query = $model->findOrFail($post_id);
             $query->like = $query->like + 1;
             $result = $query->save();
             return ['result' => true];
         } 
     }
+
+  
 }
