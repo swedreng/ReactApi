@@ -16,7 +16,7 @@ class MainController extends Controller {
 
     public function index(Request $request){
         $model = new Posts;
-        $model = $model->with(['User', 'Comments','Likes','CommentBest'])->orderByRaw('postpicture_id DESC');
+        $model = $model->with(['User', 'Comments','Likes'])->orderByRaw('postpicture_id DESC');
         return $model->get();
     }
 

@@ -3,7 +3,7 @@ namespace App\Models;
 use JWTAuth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Carbon\Carbon;
 class Comments extends Model {
     use SoftDeletes;
     protected $softDelete = true;
@@ -13,11 +13,17 @@ class Comments extends Model {
     protected $hidden = [];
     protected $appends = [
       'IsLikedComment',
-      
+      'Time'
     ];
+    //protected $dates = ['created_at'];
 
     public function User() {
       return $this->hasOne('App\Models\Users', 'id', 'id');
+    }
+   
+    public function getTimeAttribute(){
+      $carbon =  Carbon::parse($this->created_at);
+      return $carbon->diffForHumans();
     }
 
     public function getIsLikedCommentAttribute(){
