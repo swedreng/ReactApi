@@ -20,8 +20,9 @@ class CommentController extends Controller {
         $user = JWTAuth::parseToken()->authenticate();
         $id = $user->id;
         $result = $model->create(array_merge($request->all(),['id' => $id]));
-        return ['result' => $result,
-                'post_id' => $post_id];     
+        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('comment_id','ASC')->get();
+        return $query;
+           
   
     }
 
@@ -31,6 +32,13 @@ class CommentController extends Controller {
        $query = $model->with(['User', 'Comments','Likes'])->where('postpicture_id', '=', $post_id)->first();
        return $query;
  
+    }
+    public function getComment(Request $request){
+        $value = $request->input('value');
+        $post_id = $request->input('post_id');
+        $model = new Comments;
+        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('comment_id','ASC')->take($value)->get();
+        return $query;
     }
     
     public function Like(Request $request){

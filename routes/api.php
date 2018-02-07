@@ -28,9 +28,14 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/user/createpp', ['uses' => 'PostController@createpp']); // createpp = create picture post //+
     Route::post('/user/createwp', ['uses' => 'PostController@createwp']); // createwp = create write post // yapılacak route u ve fonskiyonu olusturuldu.
     Route::post('/user/deletepost', ['uses' => 'PostController@delete']); // yapılacak route u yapıldı.
+
+    
+    Route::post('/getcomment',['uses' => 'CommentController@getComment']);
     Route::post('/comment', ['uses' => 'CommentController@index']);
     Route::get('/comment', ['uses' => 'CommentController@commentUpdate']);
     Route::put('/comment', ['uses' => 'CommentController@Like']);
+
+    
     
       // Tokensiz //
         // MainController //
