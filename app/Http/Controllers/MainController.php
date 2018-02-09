@@ -15,9 +15,14 @@ use App\Http\Requests\SignupPostRequest;
 class MainController extends Controller {
 
     public function index(Request $request){
+        $postReq = $request->input('postReq');
         $model = new Posts;
-        $model = $model->with(['User', 'Comments','Likes'])->orderByRaw('postpicture_id DESC');
-        return $model->get();
+        $result = $model->get();
+        $postCount = count($result);
+        $query = $model->with(['User','Likes'])->orderByRaw('postpicture_id DESC')->skip($postReq)->take(3)->get();
+      
+        return ['data' => $query,
+                'postCount' => $postCount];
     }
 
     public function login(LoginPostRequest $request){

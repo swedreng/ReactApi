@@ -27,7 +27,7 @@ class Posts extends Model {
 		  return $this->hasOne('App\Models\Users', 'id', 'id');
     }
     public function Comments() {
-      return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User');
+      return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc');
     }
     public function Comment() {
       return $this->hasOne('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User');
@@ -40,7 +40,9 @@ class Posts extends Model {
     public function getImageAttribute($image){
       return env('APP_URL').$image;
     }
-
+    //public function CommentsLast($commentCount) {
+      //return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc')->skip($commentCount-3)->take(3);
+    //}
     public function getCommentCountAttribute(){
       return $this->Comments()->count();
     }
@@ -49,7 +51,7 @@ class Posts extends Model {
       //$dates = "2018-02-06 08:37:38";
       //return $model->$created_at->format('d.m.y');
 
-      return $this->Comment()->orderBy('comment_id','ASC')->take(3)->get();
+      return $this->Comment()->orderBy('like','desc')->take(3)->get();
     }
 
     public function getTimeAttribute(){
@@ -57,7 +59,7 @@ class Posts extends Model {
       return $carbon->diffForHumans();
     }
     public function getCommentBestAttribute(){
-      return $this->Comment()->orderBy('like', 'desc')->get()->take(4); 
+      return $this->Comment()->orderBy('like', 'desc')->orderBy('comment_id','asc')->get()->take(4); 
     }
     public function getIslikedPostAttribute(){
       $model = new Like();

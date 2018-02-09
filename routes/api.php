@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 
 Route::group(['middleware' => ['jwt.auth']], function () {
     
-    Route::get('/posts', ['uses' => 'MainController@index']);
+    Route::post('/posts', ['uses' => 'MainController@index']);
     Route::post('/postlike', ['uses' => 'PostController@Like']);
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   
@@ -32,6 +32,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     
     Route::post('/getcomment',['uses' => 'CommentController@getComment']);
     Route::post('/comment', ['uses' => 'CommentController@index']);
+    Route::post('/commentlast', ['uses' => 'CommentController@commentLastUpdate']);
     Route::get('/comment', ['uses' => 'CommentController@commentUpdate']);
     Route::put('/comment', ['uses' => 'CommentController@Like']);
 

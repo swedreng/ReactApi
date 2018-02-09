@@ -16,14 +16,18 @@ class CommentController extends Controller {
 
     public function index(Request $request){
         $post_id = $request->input('postpicture_id');
+        $openCommentCount = $request->input('commentCount');
         $model = new Comments;
         $user = JWTAuth::parseToken()->authenticate();
         $id = $user->id;
         $result = $model->create(array_merge($request->all(),['id' => $id]));
-        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('comment_id','ASC')->get();
-        return $query;
+        //$query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('comment_id','ASC')->get();
+        $result = $model->where('postpicture_id', '=' , $post_id)->get();
+        $commentCount = count($result);
+        $query = $model->where('postpicture_id', '=' , $post_id)->skip($commentCount-1)->take(1)->get();
+        return ['data' => $query,
+                'commentCount' => $commentCount];
            
-  
     }
 
     public function commentUpdate(Request $request){
@@ -33,12 +37,24 @@ class CommentController extends Controller {
        return $query;
  
     }
+
+    public function commentLastUpdate(Request $request){
+        $post_id = $request->input('post_id');
+        $commentCount = $request->input('commentCount');
+        $model = new Comments;
+        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('like','desc')->orderBy('comment_id','asc')->skip(0)->take($commentCount)->get();
+        return $query;
+  
+     }
     public function getComment(Request $request){
         $value = $request->input('value');
         $post_id = $request->input('post_id');
         $model = new Comments;
-        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('comment_id','ASC')->take($value)->get();
-        return $query;
+        $result = $model->where('postpicture_id', '=' , $post_id)->get();
+        $commentCount = count($result);
+        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('like','desc')->orderBy('comment_id','asc')->take($value)->get();
+        return ['data' => $query,
+                'commentCount' => $commentCount];
     }
     
     public function Like(Request $request){
@@ -58,14 +74,16 @@ class CommentController extends Controller {
                     $query = $model->findOrFail($comment_id);
                     $query->like = $query->like + 1;
                     $result = $query->save();
-                    return ['result' => false];
+                    return ['result' => true,
+                            'likeCount' => $query->like];
                 }else{
                     $result->like = false;
                     $result->save();
                     $query = $model->findOrFail($comment_id);
                     $query->like = $query->like - 1;
                     $result = $query->save();
-                    return ['result' => false];
+                    return ['result' => false,
+                            'likeCount' => $query->like];
                 }
             
         }else{
@@ -78,7 +96,8 @@ class CommentController extends Controller {
             $query = $model->findOrFail($comment_id);
             $query->like = $query->like + 1;
             $result = $query->save();
-            return ['result' => true];
+            return ['result' => true,
+                    'likeCount' => $query->like];
         } 
     }
 

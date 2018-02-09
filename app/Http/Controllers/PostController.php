@@ -64,14 +64,16 @@ class PostController extends Controller {
                     $query = $model->findOrFail($post_id);
                     $query->like = $query->like + 1;
                     $result = $query->save();
-                    return ['result' => false];
+                    return ['result' => true,
+                            'likeCount' => $query->like];
                 }else{
                     $result->like = false;
                     $result->save();
                     $query = $model->findOrFail($post_id);
                     $query->like = $query->like - 1;
                     $result = $query->save();
-                    return ['result' => false];
+                    return ['result' => false,
+                            'likeCount' => $query->like];
                 }
 
             }else{
@@ -84,7 +86,8 @@ class PostController extends Controller {
             $query = $model->findOrFail($post_id);
             $query->like = $query->like + 1;
             $result = $query->save();
-            return ['result' => true];
+            return ['result' => true,
+                    'likeCount' => $query->like];
         } 
     }
 
