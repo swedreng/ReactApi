@@ -47,11 +47,9 @@ class Posts extends Model {
       return $this->Comments()->count();
     }
     public function getCommentLastAttribute(){
-      //$model = new Carbon();
-      //$dates = "2018-02-06 08:37:38";
-      //return $model->$created_at->format('d.m.y');
-
-      return $this->Comment()->orderBy('like','desc')->take(3)->get();
+      $commentCount = $this->Comments()->count();
+      return $this->Comment()->orderBy('comment_id','asc')->skip($commentCount-3)->take(3)->get();
+      
     }
 
     public function getTimeAttribute(){

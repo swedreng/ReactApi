@@ -21,10 +21,9 @@ class CommentController extends Controller {
         $user = JWTAuth::parseToken()->authenticate();
         $id = $user->id;
         $result = $model->create(array_merge($request->all(),['id' => $id]));
-        //$query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('comment_id','ASC')->get();
         $result = $model->where('postpicture_id', '=' , $post_id)->get();
         $commentCount = count($result);
-        $query = $model->where('postpicture_id', '=' , $post_id)->skip($commentCount-1)->take(1)->get();
+        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip($commentCount-1)->take(1)->get();
         return ['data' => $query,
                 'commentCount' => $commentCount];
            
@@ -49,12 +48,22 @@ class CommentController extends Controller {
     public function getComment(Request $request){
         $value = $request->input('value');
         $post_id = $request->input('post_id');
+        $clickCount = $request->input('clickCount');
         $model = new Comments;
         $result = $model->where('postpicture_id', '=' , $post_id)->get();
         $commentCount = count($result);
-        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('like','desc')->orderBy('comment_id','asc')->take($value)->get();
-        return ['data' => $query,
-                'commentCount' => $commentCount];
+        if($commentCount - $clickCount < 0) {
+            if($clickCount - $commentCount == 1) {
+                $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(1)->get();
+                return ['data' => $query];
+            }
+            $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(2)->get();
+            return ['data' => $query];
+        }else {
+            $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip($commentCount-$clickCount)->take(3)->get();
+            return ['data' => $query];
+        }
+        
     }
     
     public function Like(Request $request){
