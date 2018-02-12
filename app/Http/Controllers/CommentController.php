@@ -54,10 +54,13 @@ class CommentController extends Controller {
         $commentCount = count($result);
         if($commentCount - $clickCount < 0) {
             if($clickCount - $commentCount == 1) {
-                $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(1)->get();
+                $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(2)->get();
                 return ['data' => $query];
             }
-            $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(2)->get();
+            if($clickCount - $commentCount == 3){
+                return ['data' => false];
+            }
+            $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(1)->get();
             return ['data' => $query];
         }else {
             $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip($commentCount-$clickCount)->take(3)->get();

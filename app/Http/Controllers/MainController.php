@@ -16,13 +16,26 @@ class MainController extends Controller {
 
     public function index(Request $request){
         $postReq = $request->input('postReq');
+        $status = $request->input('status');
         $model = new Posts;
         $result = $model->get();
         $postCount = count($result);
         $query = $model->with(['User','Likes'])->orderByRaw('postpicture_id DESC')->skip($postReq)->take(3)->get();
-      
         return ['data' => $query,
-                'postCount' => $postCount];
+                'postCount' => $postCount,
+                'event' => $status];
+    }
+    
+    public function noLogin(Request $request){
+        $postReq = $request->input('postReq');
+        $model = new Users;
+        $result = $model->get();
+        return $result;
+        $postCount = count($result);
+        $query = $model->with(['User','Likes'])->orderByRaw('postpicture_id DESC')->skip($postReq)->take(3)->get();
+        return ['data' => $query,
+                'postCount' => $postCount,
+                'event' => $status];
     }
 
     public function login(LoginPostRequest $request){

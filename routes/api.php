@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
     //posts
     Route::post('/login', ['uses' => 'MainController@login']); //+
     Route::post('/signup', ['uses' => 'MainController@signup']); // +
+    Route::post('/postsdefault', ['uses' => 'MainController@noLogin']);
     //gets
      // +
 
