@@ -1,21 +1,20 @@
 <?php 
 namespace App\Models;
-use JWTAuth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Like;
 use App\Models\Comments;
 use Carbon\Carbon;
 
-class Posts extends Model {
+class NoLoginPosts extends Model {
     use SoftDeletes;
     protected $softDelete = true;
     protected $table = 'postspicture';
     protected $primaryKey = 'postpicture_id';
-    protected $fillable = ['id','writing','image','kind','created_at'];
+    protected $fillable = ['id','writing','image','created_at'];
     protected $hidden = [];
     protected $appends = [
-        'IslikedPost', 
+        
         'CommentCount',
         'CommentLast',
         'CommentBest',
@@ -27,10 +26,10 @@ class Posts extends Model {
 		  return $this->hasOne('App\Models\Users', 'id', 'id');
     }
     public function Comments() {
-      return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc');
+      return $this->hasMany('App\Models\NoLoginComments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc');
     }
     public function Comment() {
-      return $this->hasOne('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User');
+      return $this->hasOne('App\Models\NoLoginComments', 'postpicture_id', 'postpicture_id')->with('User');
     }
   
     public function Likes() {
@@ -40,9 +39,7 @@ class Posts extends Model {
     public function getImageAttribute($image){
       return env('APP_URL').$image;
     }
-    //public function CommentsLast($commentCount) {
-      //return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc')->skip($commentCount-3)->take(3);
-    //}
+   
     public function getCommentCountAttribute(){
       return $this->Comments()->count();
     }
@@ -59,16 +56,7 @@ class Posts extends Model {
     public function getCommentBestAttribute(){
       return $this->Comment()->orderBy('like', 'desc')->orderBy('comment_id','asc')->get()->take(4); 
     }
-    public function getIslikedPostAttribute(){
-      $model = new Like();
-      $user = JWTAuth::parseToken()->authenticate();
-        
-      $result = $model->where([['postpicture_id', '=', $this->postpicture_id],['id', '=', $user->id],['kind' , '=' , 'post']])->first();
-      if($result && $result->like){
-        return true;
-      } else {
-        return false;
-      }
-    }
+
+    
 
 }

@@ -46,7 +46,6 @@ class CommentController extends Controller {
   
      }
     public function getComment(Request $request){
-        $value = $request->input('value');
         $post_id = $request->input('post_id');
         $clickCount = $request->input('clickCount');
         $model = new Comments;

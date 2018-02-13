@@ -17,7 +17,8 @@ class CreateContentTable extends Migration
             $table->increments('postpicture_id');
             $table->integer('id')->nullable()->unsigned();
             $table->string('writing');
-            $table->string('image');
+            $table->string('image')->nullable();
+            $table->string('kind');
             $table->integer('like')->default(0);
             $table->softDeletes();
             $table->timestamp('created_at')->useCurrent();

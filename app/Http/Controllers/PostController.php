@@ -22,6 +22,7 @@ class PostController extends Controller {
     public function createpp(FileUploadPostRequest $request){ // +
         
         $model = new Posts;
+        $model->kind = 'picture';
         $writing = $request->input('writing');
         $files = $request->file('files');
         $extension = $files->getClientOriginalExtension(); //jpg
@@ -38,7 +39,22 @@ class PostController extends Controller {
         }
       
     }
+    
+    public function createwp(Request $request){
+        $model = new Posts;
+        $model->kind = 'write';
+        $write = $request->input('write');
+        $user = JWTAuth::parseToken()->authenticate();
+        $model->id = $user->id;
+        $model->writing = $write;
+        $result = $model->save();
         
+        if($result){
+            return ['message' => 'Profilinizde paylaşıldı.',
+                    'success' => true];
+        }
+    }
+
     public function getUser(Request $request){
        
     }

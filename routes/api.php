@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
     //posts
     Route::post('/login', ['uses' => 'MainController@login']); //+
     Route::post('/signup', ['uses' => 'MainController@signup']); // +
-    Route::post('/postsdefault', ['uses' => 'MainController@noLogin']);
+    Route::post('/postsdefault', ['uses' => 'NoLoginMainController@index']);
+    Route::post('/outgetcomment', ['uses' => 'NoLoginMainController@getComments']);
     //gets
      // +
 
