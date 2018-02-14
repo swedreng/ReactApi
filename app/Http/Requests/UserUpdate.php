@@ -25,8 +25,8 @@ class UserUpdate extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|unique:users,email|email',
-            'username' => 'required|unique:users,username',
+            'email' => 'required','email|email', // buraya bi ara bak .. düzelt
+            'username' => 'required','username',
             'firstname' => 'required',
             'lastname' => 'required'
         ];

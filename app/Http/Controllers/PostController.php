@@ -59,8 +59,15 @@ class PostController extends Controller {
        
     }
 
-    public function delete($id){
-       
+    public function delete(Request $request){
+       $model = new Posts;
+       $post_id = $request->input('post_id');
+       $query = $model->findOrFail($post_id);
+       $result = $query->delete();
+       $result = $model->get();
+       $postCount = count($result);
+       return ['result' => $result,
+                'postCount' => $postCount];
     }
 
     public function Like(Request $request){

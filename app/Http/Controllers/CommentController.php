@@ -29,6 +29,18 @@ class CommentController extends Controller {
            
     }
 
+    public function delete(Request $request){
+        $model = new Comments;
+        $comment_id = $request->input('comment_id');
+        $post_id = $request->input('post_id');
+        $query = $model->findOrFail($comment_id);
+        $result = $query->delete();
+        $result = $model->where('postpicture_id','=',$post_id)->get();
+        $commentCount = count($result);
+        return ['result' => $result,
+                 'commentCount' => $commentCount];
+    } 
+
     public function commentUpdate(Request $request){
        $post_id = $request->input('post_id');
        $model = new Posts;

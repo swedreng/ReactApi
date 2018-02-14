@@ -29,8 +29,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::delete('/user', ['uses' => 'UserController@ppdelete']); // yapılacak route u yapıldı.
     Route::post('/user/createpp', ['uses' => 'PostController@createpp']); // createpp = create picture post //+
     Route::post('/user/createwp', ['uses' => 'PostController@createwp']); // createwp = create write post // yapılacak route u ve fonskiyonu olusturuldu.
-    Route::post('/user/deletepost', ['uses' => 'PostController@delete']); // yapılacak route u yapıldı.
-
+    Route::delete('/user/deletepost', ['uses' => 'PostController@delete']); // yapılacak route u yapıldı.
+    Route::delete('/user/deletecomment', ['uses' => 'CommentController@delete']);
     
     Route::post('/getcomment',['uses' => 'CommentController@getComment']);
     Route::post('/comment', ['uses' => 'CommentController@index']);
