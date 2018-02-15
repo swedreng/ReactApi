@@ -32,14 +32,41 @@ class CommentController extends Controller {
     public function delete(Request $request){
         $model = new Comments;
         $comment_id = $request->input('comment_id');
+        $user = JWTAuth::parseToken()->authenticate();
+        $id = $user->id;
         $post_id = $request->input('post_id');
-        $query = $model->findOrFail($comment_id);
-        $result = $query->delete();
-        $result = $model->where('postpicture_id','=',$post_id)->get();
-        $commentCount = count($result);
-        return ['result' => $result,
-                 'commentCount' => $commentCount];
+        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['postpicture_id','=', $post_id]]);
+        if($status){
+            $query = $model->findOrFail($comment_id);
+            $result = $query->delete();
+            $result = $model->where('postpicture_id','=',$post_id)->get();
+            $commentCount = count($result);
+            return ['result' => $result,
+                     'commentCount' => $commentCount];
+        }else{
+            return ['result' => false];
+        }
+        
     } 
+
+    public function update(Request $request){
+        $model = new Comments;
+        $comment_id = $request->input('comment_id');
+        $post_id = $request->input('post_id');
+        $comment = $request->input('comment');
+        $user = JWTAuth::parseToken()->authenticate();
+        $id = $user->id;
+        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['postpicture_id','=', $post_id]])->get();
+        if($status){
+            $query = $model->findOrFail($comment_id);
+            $query->writing = $comment;
+            $result = $query->save();
+            return ['result' => $result];
+        }else{
+            return ['result' => false];
+        }
+        
+    }
 
     public function commentUpdate(Request $request){
        $post_id = $request->input('post_id');

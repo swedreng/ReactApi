@@ -31,6 +31,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/user/createwp', ['uses' => 'PostController@createwp']); // createwp = create write post // yapılacak route u ve fonskiyonu olusturuldu.
     Route::delete('/user/deletepost', ['uses' => 'PostController@delete']); // yapılacak route u yapıldı.
     Route::delete('/user/deletecomment', ['uses' => 'CommentController@delete']);
+    Route::put('/user/updatecomment', ['uses' => 'CommentController@update']);
     
     Route::post('/getcomment',['uses' => 'CommentController@getComment']);
     Route::post('/comment', ['uses' => 'CommentController@index']);
