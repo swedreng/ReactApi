@@ -19,12 +19,14 @@ class AdminController extends Controller {
     }
      
     public function getUser(Request $request){
+
         $model = new Users;
-        $query = $model->get();
+        $query = $model::paginate(7);
         return $query;
     }
 
     public function delete($id){
+       
         $query = Users::findOrFail($id);
         $result = $query->delete($id);
         if($result){

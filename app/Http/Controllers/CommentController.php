@@ -83,7 +83,8 @@ class CommentController extends Controller {
         $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('like','desc')->orderBy('comment_id','asc')->skip(0)->take($commentCount)->get();
         return $query;
   
-     }
+    }
+    
     public function getComment(Request $request){
         $post_id = $request->input('post_id');
         $clickCount = $request->input('clickCount');

@@ -22,7 +22,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   
     Route::get('/users', ['uses' => 'AdminController@getUser']); // +
     Route::get('/user', ['uses' => 'UserController@get']); // +
-   
+  
     //posts
     Route::post('/user/pp', ['uses' => 'UserController@pp']); // +
     Route::put('/user', ['uses' => 'UserController@update']); // +

@@ -26,7 +26,7 @@ class UserUpdate extends FormRequest
     {
         return [
             'email' => 'required','email|email', // buraya bi ara bak .. düzelt
-            'username' => 'required','username',
+            'username' => 'required|unique:users','username',
             'firstname' => 'required',
             'lastname' => 'required'
         ];
