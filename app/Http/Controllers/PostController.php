@@ -70,6 +70,20 @@ class PostController extends Controller {
                 'postCount' => $postCount];
     }
 
+    public function postConfirmation(Request $request){
+
+        $post_id = $request->input('post_id');
+        $user = JWTAuth::parseToken()->authenticate();
+        $user_id = $user->id;
+        $query = Users::where('id','=',$user_id)->first();
+        
+        if($query->rank == 1){
+            $query = Posts::where('post_id' , '=', $post_id)->first();
+            $query->confirmation = true;
+            $query->save();
+            return['result' => true];
+        }
+    }
     public function Like(Request $request){
         $post_id = $request->input('post_id');
         $like_kind = $request->input('like_kind');
