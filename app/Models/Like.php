@@ -8,7 +8,7 @@ class Like extends Model {
     protected $softDelete = true;
     protected $table = 'likes';
     protected $primaryKey = 'like_id';
-    protected $fillable = ['id','postpicture_id','likepost'];
+    protected $fillable = ['id','post_id','likepost'];
     protected $hidden = [];
 
     public function User() {

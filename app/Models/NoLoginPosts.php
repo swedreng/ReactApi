@@ -9,8 +9,8 @@ use Carbon\Carbon;
 class NoLoginPosts extends Model {
     use SoftDeletes;
     protected $softDelete = true;
-    protected $table = 'postspicture';
-    protected $primaryKey = 'postpicture_id';
+    protected $table = 'posts';
+    protected $primaryKey = 'post_id';
     protected $fillable = ['id','writing','image','created_at'];
     protected $hidden = [];
     protected $appends = [
@@ -26,14 +26,14 @@ class NoLoginPosts extends Model {
 		  return $this->hasOne('App\Models\Users', 'id', 'id');
     }
     public function Comments() {
-      return $this->hasMany('App\Models\NoLoginComments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc');
+      return $this->hasMany('App\Models\NoLoginComments', 'post_id', 'post_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc');
     }
     public function Comment() {
-      return $this->hasOne('App\Models\NoLoginComments', 'postpicture_id', 'postpicture_id')->with('User');
+      return $this->hasOne('App\Models\NoLoginComments', 'post_id', 'post_id')->with('User');
     }
   
     public function Likes() {
-      return $this->hasMany('App\Models\Like', 'postpicture_id' , 'postpicture_id');
+      return $this->hasMany('App\Models\Like', 'post_id' , 'post_id');
     }
 
     public function getImageAttribute($image){

@@ -9,7 +9,7 @@ class NoLoginComments extends Model {
     protected $softDelete = true;
     protected $table = 'comments';
     protected $primaryKey = 'comment_id';
-    protected $fillable = ['id','postpicture_id','writing'];
+    protected $fillable = ['id','post_id','writing'];
     protected $hidden = [];
     protected $appends = [
       'Time'

@@ -77,7 +77,7 @@ class PostController extends Controller {
         $model = new Posts;
         $likeModel = new Like;
         $user = JWTAuth::parseToken()->authenticate();
-        $result = $likeModel->where([['id', '=' , $user->id],['postpicture_id', '=' , $post_id],['kind', '=' , $like_kind]])->first();
+        $result = $likeModel->where([['id', '=' , $user->id],['post_id', '=' , $post_id],['kind', '=' , $like_kind]])->first();
         
         if(!is_null($result)){
 
@@ -100,7 +100,7 @@ class PostController extends Controller {
                 }
 
             }else{
-            $likeModel->postpicture_id = $post_id;
+            $likeModel->post_id = $post_id;
             $likeModel->id = $user->id;
             $likeModel->like = true;
             $likeModel->kind = $like_kind;

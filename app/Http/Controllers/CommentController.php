@@ -15,15 +15,15 @@ use Illuminate\Http\Response;
 class CommentController extends Controller {
 
     public function index(Request $request){
-        $post_id = $request->input('postpicture_id');
+        $post_id = $request->input('post_id');
         $openCommentCount = $request->input('commentCount');
         $model = new Comments;
         $user = JWTAuth::parseToken()->authenticate();
         $id = $user->id;
         $result = $model->create(array_merge($request->all(),['id' => $id]));
-        $result = $model->where('postpicture_id', '=' , $post_id)->get();
+        $result = $model->where('post_id', '=' , $post_id)->get();
         $commentCount = count($result);
-        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip($commentCount-1)->take(1)->get();
+        $query = $model->with('User')->where('post_id', '=' , $post_id)->skip($commentCount-1)->take(1)->get();
         return ['data' => $query,
                 'commentCount' => $commentCount];
            
@@ -35,11 +35,11 @@ class CommentController extends Controller {
         $user = JWTAuth::parseToken()->authenticate();
         $id = $user->id;
         $post_id = $request->input('post_id');
-        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['postpicture_id','=', $post_id]]);
+        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['post_id','=', $post_id]]);
         if($status){
             $query = $model->findOrFail($comment_id);
             $result = $query->delete();
-            $result = $model->where('postpicture_id','=',$post_id)->get();
+            $result = $model->where('post_id','=',$post_id)->get();
             $commentCount = count($result);
             return ['result' => $result,
                      'commentCount' => $commentCount];
@@ -56,7 +56,7 @@ class CommentController extends Controller {
         $comment = $request->input('comment');
         $user = JWTAuth::parseToken()->authenticate();
         $id = $user->id;
-        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['postpicture_id','=', $post_id]])->get();
+        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['post_id','=', $post_id]])->get();
         if($status){
             $query = $model->findOrFail($comment_id);
             $query->writing = $comment;
@@ -71,7 +71,7 @@ class CommentController extends Controller {
     public function commentUpdate(Request $request){
        $post_id = $request->input('post_id');
        $model = new Posts;
-       $query = $model->with(['User', 'Comments','Likes'])->where('postpicture_id', '=', $post_id)->first();
+       $query = $model->with(['User', 'Comments','Likes'])->where('post_id', '=', $post_id)->first();
        return $query;
  
     }
@@ -80,7 +80,7 @@ class CommentController extends Controller {
         $post_id = $request->input('post_id');
         $commentCount = $request->input('commentCount');
         $model = new Comments;
-        $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->orderBy('like','desc')->orderBy('comment_id','asc')->skip(0)->take($commentCount)->get();
+        $query = $model->with('User')->where('post_id', '=' , $post_id)->orderBy('like','desc')->orderBy('comment_id','asc')->skip(0)->take($commentCount)->get();
         return $query;
   
     }
@@ -89,20 +89,20 @@ class CommentController extends Controller {
         $post_id = $request->input('post_id');
         $clickCount = $request->input('clickCount');
         $model = new Comments;
-        $result = $model->where('postpicture_id', '=' , $post_id)->get();
+        $result = $model->where('post_id', '=' , $post_id)->get();
         $commentCount = count($result);
         if($commentCount - $clickCount < 0) {
             if($clickCount - $commentCount == 1) {
-                $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(2)->get();
+                $query = $model->with('User')->where('post_id', '=' , $post_id)->skip(0)->take(2)->get();
                 return ['data' => $query];
             }
             if($clickCount - $commentCount == 3){
                 return ['data' => false];
             }
-            $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip(0)->take(1)->get();
+            $query = $model->with('User')->where('post_id', '=' , $post_id)->skip(0)->take(1)->get();
             return ['data' => $query];
         }else {
-            $query = $model->with('User')->where('postpicture_id', '=' , $post_id)->skip($commentCount-$clickCount)->take(3)->get();
+            $query = $model->with('User')->where('post_id', '=' , $post_id)->skip($commentCount-$clickCount)->take(3)->get();
             return ['data' => $query];
         }
         
@@ -138,7 +138,7 @@ class CommentController extends Controller {
                 }
             
         }else{
-            $likeModel->postpicture_id = $post_id;
+            $likeModel->post_id = $post_id;
             $likeModel->id = $user->id;
             $likeModel->like = true;
             $likeModel->kind = $like_kind;
