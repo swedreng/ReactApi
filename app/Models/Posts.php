@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Like;
 use App\Models\Comments;
+use App\Models\ModConfirmation;
 use Carbon\Carbon;
 
 class Posts extends Model {
@@ -12,7 +13,7 @@ class Posts extends Model {
     protected $softDelete = true;
     protected $table = 'posts';
     protected $primaryKey = 'post_id';
-    protected $fillable = ['id','writing','image','kind','created_at'];
+    protected $fillable = ['id','writing','image','kind','created_at','confirmation'];
     protected $hidden = [];
     protected $appends = [
         'IslikedPost', 
@@ -20,8 +21,18 @@ class Posts extends Model {
         'CommentLast',
         'CommentBest',
         'Time',
+        'IsConfirmationPost'
     ];
    //protected $dates = ['created_at'];
+
+   protected static function boot() {
+		parent::boot();
+	
+		static::deleting(function($post) { 
+			$post->Comments()->delete();
+		});
+    }
+
   
     public function User() {
 		  return $this->hasOne('App\Models\Users', 'id', 'id');
@@ -67,6 +78,16 @@ class Posts extends Model {
       if($result && $result->like){
         return true;
       } else {
+        return false;
+      }
+    }
+    public function getIsConfirmationPostAttribute(){
+      $model = new ModConfirmation();
+      $user = JWTAuth::parseToken()->authenticate();
+      $result = $model->where([['post_id', '=', $this->post_id],['moderator_id', '=', $user->id]])->first();
+      if($result && $result->confirmation){
+        return true;
+      }else {
         return false;
       }
     }

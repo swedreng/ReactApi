@@ -17,7 +17,7 @@ class NoLoginMainController extends Controller {
         $model = new NoLoginPosts;
         $result = $model->get();
         $postCount = count($result);
-        $query = $model->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $query = $model->with(['User','Likes'])->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         return ['data' => $query,
                 'postCount' => $postCount,
                 'event' => $status];

@@ -18,6 +18,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     
     Route::post('/posts', ['uses' => 'MainController@index']);
     Route::post('/post/confirmation', ['uses' => 'PostController@postConfirmation']);
+    Route::post('post/confirmationupdate', ['uses' => 'PostController@postConfirmationUpdate']);
     Route::post('/postlike', ['uses' => 'PostController@Like']);
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   
