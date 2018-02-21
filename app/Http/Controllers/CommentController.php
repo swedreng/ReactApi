@@ -35,7 +35,7 @@ class CommentController extends Controller {
         $user = JWTAuth::parseToken()->authenticate();
         $id = $user->id;
         $post_id = $request->input('post_id');
-        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['post_id','=', $post_id]]);
+        $status = $model->where([['id','=', $id],['comment_id','=', $comment_id],['post_id','=', $post_id]])->first();
         if($status){
             $query = $model->findOrFail($comment_id);
             $result = $query->delete();

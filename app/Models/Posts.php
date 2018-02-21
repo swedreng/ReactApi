@@ -47,7 +47,7 @@ class Posts extends Model {
     public function Likes() {
       return $this->hasMany('App\Models\Like', 'post_id' , 'post_id');
     }
-
+    
     public function getImageAttribute($image){
       return env('APP_URL').$image;
     }

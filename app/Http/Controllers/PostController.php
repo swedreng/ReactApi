@@ -5,6 +5,8 @@ use App\Models\Posts;
 use App\Models\Like;
 use App\Models\ModConfirmation;
 use App\Models\PostConfirmation;
+use App\Models\BlockPost;
+use App\Models\BlockUser;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -76,44 +78,87 @@ class PostController extends Controller {
         }
     }
 
-    public function getUser(Request $request){
-       //
+    private function blockPostCount($post_id,$event){
+       $post_id = $request->input('post_id'); 
+       $blockPostModel = new BlockPost;
+       $query = $blockPostModel->where('post_id','=',$post_id)->first();
+       $query->block_count = $query->block_count + 1;
+       $query->save();
+       if($query){
+            return true;
+       }else{
+            return false;
+       }
+    }
+    public function blockPost(Request $request){
+        $post_id = $request->input('post_id'); 
+        $blockUserModel = new BlockUser;
+        $query = $blockUserModel->where('post_id','=',$post_id)->first();
+        if($query){
+
+        }else{
+            $user = JWTAuth::parseToken()->authenticate();
+            $query = $blockUserModel->create(['id'=>$user->id,'post_id'=>$post_id,'block_status'=>true]);
+            if($query){
+                $result = $this->blockPostCount($post_id,true);
+            }
+        }
     }
 
     public function delete(Request $request){ // düzenlenicek
        $model = new Posts;
        $post_id = $request->input('post_id');
-       $query = $model->findOrFail($post_id);
-       $result = $query->delete();
-       $result = $model->get();
-       $postCount = count($result);
-       return ['result' => $result,
-                'postCount' => $postCount];
+       $user = JWTAuth::parseToken()->authenticate();
+       $query = Users::where('id','=',$user->id)->first();
+       
+       switch($query->rank){
+           case 1:
+                $query = $model->findOrFail($post_id);
+                $result = $query->delete();
+                $posts = $model->get();
+                $postCount = count($posts);
+                return ['result' => $result,
+                        'postCount' => $postCount];
+           break;
+           case 2:
+                $queryPost = $model->where('post_id','=',$post_id)->first();
+                if($query->id == $queryPost->id){
+                    $query = $model->findOrFail($post_id);
+                    $result = $query->delete();
+                    $posts = $model->get();
+                    $postCount = count($posts);
+                    return ['result' => $result,
+                    'postCount' => $postCount];
+                }else{
+                    return ['result' => false,
+                    'message' => 'Size ait olmayan bir postu silmeye çalışıyorsunuz.'];
+                }
+           break;
+       }
+     
     }
-    public function postConfirmationUpdate(Request $request){
-        $post_id = $request->input('post_id');
+
+    private function postConfirmationModerator($post_id,$confirmation_count){
         $model = new Users;
         $modelConf = new PostConfirmation;
         $query = $model->where('rank','=', 2)->get();
         $modCount = count($query);
-        $result = $modelConf->where('post_id','=',$post_id)->first();
-        $confirmation_count = $result->confirmation_count;
         $condition = $modCount / 2;
         if($confirmation_count >= $condition){
             $modelPosts = new Posts;
             $result = $modelPosts->where('post_id','=',$post_id)->first();
             $result->confirmation = true;
             $result->save();
-            return ['result' => true];
+            return true;
         }else{
             $modelPosts = new Posts;
             $result = $modelPosts->where('post_id','=',$post_id)->first();
             $result->confirmation = false;
             $result->save();
-            return ['result' => false];
+            return false;
         }
-
     }
+
     public function postConfirmation(Request $request){
 
         $post_id = $request->input('post_id');
@@ -127,16 +172,17 @@ class PostController extends Controller {
             case 1: 
             $model = new Posts;
             $query = $model->where('post_id', '=' , $post_id)->first();
-            
             if($query->confirmation){
                 $query->confirmation = false;
                 $query->save();  
-                return ['result' => false];
-                
+                return ['postConfirmation' => false,
+                        'IsRole' => 1];
+                 
             }else{
                 $query->confirmation = true;
                 $query->save();
-                return ['result' => true];
+                return ['postConfirmation' => true,
+                        'IsRole' => 1];
             }
             break;
             case 2:
@@ -148,16 +194,20 @@ class PostController extends Controller {
                         $query = $postConfModel->where('post_id','=',$post_id)->first();
                         $query->confirmation_count = $query->confirmation_count - 1;
                         $query->save();
-                        return ['result' => false,
-                                'confirmation_count' => $query->confirmation_count];
+                        $postConfirmation = $this->postConfirmationModerator($post_id,$query->confirmation_count);
+                        return ['IsConfirmationPost' => false,
+                                'IsRole' => 2,
+                                'postConfirmation' => $postConfirmation];
                     }else{
                         $query->confirmation = true;
                         $query->save();
                         $query = $postConfModel->where('post_id','=',$post_id)->first();
                         $query->confirmation_count = $query->confirmation_count + 1;
                         $query->save();
-                        return ['result' => true,
-                                'confirmation_count' => $query->confirmation_count];
+                        $postConfirmation = $this->postConfirmationModerator($post_id,$query->confirmation_count);
+                        return ['IsConfirmationPost' => true,
+                                'IsRole' => 2,
+                                'postConfirmation' => $postConfirmation];
                     }   
 
                 }else{
@@ -165,17 +215,17 @@ class PostController extends Controller {
                     $query = $postConfModel->where('post_id','=', $post_id)->first();
                     $query->confirmation_count = $query->confirmation_count + 1;
                     $query->save();
-                    return ['result' => true,
-                            'confirmation_count' => $query->confirmation_count];
+                    $postConfirmation = $this->postConfirmationModerator($post_id,$query->confirmation_count);
+                    return ['IsConfirmationPost' => true,
+                            'IsRole' => 2,
+                            'postConfirmation' => $postConfirmation];
                 }
-            break;
-            
+            break; 
         }
     }
     public function Like(Request $request){
         $post_id = $request->input('post_id');
         $like_kind = $request->input('like_kind');
-        
         $model = new Posts;
         $likeModel = new Like;
         $user = JWTAuth::parseToken()->authenticate();
@@ -202,17 +252,17 @@ class PostController extends Controller {
                 }
 
             }else{
-            $likeModel->post_id = $post_id;
-            $likeModel->id = $user->id;
-            $likeModel->like = true;
-            $likeModel->kind = $like_kind;
-            $likeModel->comment_id = 0;
-            $likeModel->save();
-            $query = $model->findOrFail($post_id);
-            $query->like = $query->like + 1;
-            $result = $query->save();
-            return ['result' => true,
-                    'likeCount' => $query->like];
+                $likeModel->post_id = $post_id;
+                $likeModel->id = $user->id;
+                $likeModel->like = true;
+                $likeModel->kind = $like_kind;
+                $likeModel->comment_id = 0;
+                $likeModel->save();
+                $query = $model->findOrFail($post_id);
+                $query->like = $query->like + 1;
+                $result = $query->save();
+                return ['result' => true,
+                        'likeCount' => $query->like];
         } 
     }
 

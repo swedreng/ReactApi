@@ -20,12 +20,18 @@ class MainController extends Controller {
         $model = new Posts;
         $result = $model->get();
         $postCount = count($result);
-        $query = $model->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = Users::where('id','=',$user->id)->first();
+        if($query->rank == 0){
+            $query = $model->with(['User','Likes'])->where('confirmation','=',1)->orWhere('id','=',$user->id)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        }else{
+            $query = $model->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        }
         return ['data' => $query,
                 'postCount' => $postCount,
                 'event' => $status];
     }
-    
+
     public function noLogin(Request $request){
         $postReq = $request->input('postReq');
         $model = new Users;
