@@ -18,7 +18,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     
     Route::post('/posts', ['uses' => 'MainController@index']);
     Route::post('/post/confirmation', ['uses' => 'PostController@postConfirmation']);
-    Route::post('post/blockPost', ['uses' => 'PostController@blockPost']);
+    Route::post('/post/blockPost', ['uses' => 'PostController@blockPost']);
+    Route::post('/post/blockUser', ['uses' => 'PostController@blockUser']);
     Route::post('/postlike', ['uses' => 'PostController@Like']);
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   

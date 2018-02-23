@@ -21,7 +21,9 @@ class Posts extends Model {
         'CommentLast',
         'CommentBest',
         'Time',
-        'IsConfirmationPost'
+        'IsConfirmationPost',
+        'IsBlockPost',
+
     ];
    //protected $dates = ['created_at'];
 
@@ -43,7 +45,7 @@ class Posts extends Model {
     public function Comment() {
       return $this->hasOne('App\Models\Comments', 'post_id', 'post_id')->with('User');
     }
-  
+    
     public function Likes() {
       return $this->hasMany('App\Models\Like', 'post_id' , 'post_id');
     }
@@ -54,6 +56,7 @@ class Posts extends Model {
     //public function CommentsLast($commentCount) {
       //return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc')->skip($commentCount-3)->take(3);
     //}
+  
     public function getCommentCountAttribute(){
       return $this->Comments()->count();
     }
@@ -91,5 +94,17 @@ class Posts extends Model {
         return false;
       }
     }
+    public function getIsBlockPostAttribute(){
+      $model = new BlockPost();
+      $user = JWTAuth::parseToken()->authenticate();
+      $result = $model->where([['post_id', '=', $this->post_id],['user_id', '=', $user->id]])->first();
+      if($result && $result->block_status){
+        return true;
+      }else {
+        return false;
+      }
+    }
+ 
+
 
 }

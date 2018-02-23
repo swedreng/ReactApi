@@ -4,11 +4,14 @@ use JWTAuth;
 use Validator;
 use App\Models\Users;
 use App\Models\Posts;
+use App\Models\BlockUser;
 use App\Models\Comments;
+use App\Models\BlockPost;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\LoginPostRequest; 
 use App\Http\Requests\SignupPostRequest;
 
@@ -25,7 +28,28 @@ class MainController extends Controller {
         if($query->rank == 0){
             $query = $model->with(['User','Likes'])->where('confirmation','=',1)->orWhere('id','=',$user->id)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         }else{
-            $query = $model->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+            
+           /* $query = DB::select(`p.*`)
+            ->from(`posts as p`)
+            ->join(`block_post as bp`, function($join) {
+                $join->on(DB::raw(`(p.post_id = bp.post_id)` ));
+            })*/
+            
+            //->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+           // $query = Posts::leftJoin('block_post','posts.post_id','=','block_post.post_id')->whereNull(`block_post.user_id`)->get();
+                
+            /*$query = Posts::leftJoin('block_post',function($q) use ($user){
+                $q->on('block_post.post_id','=','posts.post_id');
+                    
+            })->get();
+            //->whereNull(`block_post.user_id`)
+            //->get();*/
+
+
+            $query = Posts::leftJoin('block_post', function ($join) use ($user) {
+                $join->on('posts.post_id', '=', 'block_post.post_id');
+            })->whereRaw('block_post.user_id = 2 IS NULL')->select('posts.*')->get(4);
+            
         }
         return ['data' => $query,
                 'postCount' => $postCount,

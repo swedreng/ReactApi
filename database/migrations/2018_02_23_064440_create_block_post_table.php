@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBlockUserTable extends Migration
+class CreateBlockPostTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateBlockUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('block_user', function (Blueprint $table) {
+        Schema::create('block_post', function (Blueprint $table) {
             $table->increments('block_id');
-            $table->integer('id');
-            $table->integer('block_user_id');
+            $table->integer('user_id');
+            $table->integer('post_id');
             $table->softDeletes();
             $table->timestamp('created_at')->useCurrent();
 			$table->timestamp('updated_at')->nullable();
@@ -30,6 +30,6 @@ class CreateBlockUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('block_user');
+        Schema::dropIfExists('block_post');
     }
 }

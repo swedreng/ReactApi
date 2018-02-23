@@ -7,6 +7,7 @@ use App\Models\ModConfirmation;
 use App\Models\PostConfirmation;
 use App\Models\BlockPost;
 use App\Models\BlockUser;
+use App\Models\ModBlockPost;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -63,11 +64,13 @@ class PostController extends Controller {
         }else{
             $result = $model->create(['id' => $user->id ,'writing'=> $write,'kind' => 'write']);
         }
+        
         if($result){
             $query = $model->orderBy('post_id','desc')->take(1)->first();
             $modelConf = new PostConfirmation;
-            $query = $modelConf->create(['post_id' => $query->post_id,'confirmation_count' => 0]);
-            if($query){
+            $query = ModBlockPost::create(['post_id' => $query->post_id, 'block_count' => 0]);
+            $query2 = $modelConf->create(['post_id' => $query->post_id,'confirmation_count' => 0]);
+            if($query && $query2){
                 return ['message' => 'Profilinizde paylaşıldı.',
                 'success' => true];
             }else{
@@ -78,33 +81,83 @@ class PostController extends Controller {
         }
     }
 
-    private function blockPostCount($post_id,$event){
-       $post_id = $request->input('post_id'); 
-       $blockPostModel = new BlockPost;
-       $query = $blockPostModel->where('post_id','=',$post_id)->first();
-       $query->block_count = $query->block_count + 1;
-       $query->save();
-       if($query){
-            return true;
-       }else{
-            return false;
-       }
-    }
-    public function blockPost(Request $request){
-        $post_id = $request->input('post_id'); 
-        $blockUserModel = new BlockUser;
-        $query = $blockUserModel->where('post_id','=',$post_id)->first();
-        if($query){
+    private function deletePost($post_id,$block_count){
 
-        }else{
-            $user = JWTAuth::parseToken()->authenticate();
-            $query = $blockUserModel->create(['id'=>$user->id,'post_id'=>$post_id,'block_status'=>true]);
+        $query = Users::where('rank','=',2)->get();
+        $modCount = count($query);
+        $condition = $modCount / 2;
+        if($block_count >= $condition){
+            $query = Posts::findOrFail($post_id);
+            $query = $query->delete();
             if($query){
-                $result = $this->blockPostCount($post_id,true);
+                return true;
+            }else{
+                return false;
             }
+        }else{
+            return false;
         }
     }
 
+    private function blockPostCount($post_id){
+        $blockPostModel = new ModBlockPost;
+        $query = $blockPostModel->where('post_id','=',$post_id)->first();
+        $query->block_count = $query->block_count + 1;
+        $query->save();
+        $result = $this->deletePost($post_id,$query->block_count);
+        if($result){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function blockPost(Request $request){
+        $post_id = $request->input('post_id'); 
+        $blockPostModel = new BlockPost;
+        $user = JWTAuth::parseToken()->authenticate();
+        
+        switch($user->rank){
+            case 0:
+                $user = JWTAuth::parseToken()->authenticate();
+                $query = $blockPostModel->create(['user_id'=>$user->id,'post_id'=>$post_id]);
+                return ['result' => false, 'IsBlockPost' => true];
+            break;
+            case 2:
+                $user = JWTAuth::parseToken()->authenticate();
+                $query = $blockPostModel->create(['user_id'=>$user->id,'post_id'=>$post_id]);
+                if($query){
+                    $result = $this->blockPostCount($post_id);
+                    if($result){
+                        return ['result' => true,'IsBlockPost' => true];
+                    }else{
+                        return ['result' => false,'IsBlockPost' => true];
+                    }
+                }
+            break; 
+        }
+           
+    }
+    public function blockUser(Request $request){
+        $post_id = $request->input('post_id');
+        $user_id = $request->input('user_id');
+        $blockUserModel = new BlockUser;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $blockUserModel->where('post_id','=',$post_id)->first();
+        switch($user->rank){
+            case 0:
+                $user = JWTAuth::parseToken()->authenticate();
+                $query = $blockUserModel->create(['id'=>$user->id,'block_user_id'=>$user_id,'block_status'=>true]);
+                return ['result' => true, 'IsBlockUser' => true];
+            break;
+            case 2:
+                $user = JWTAuth::parseToken()->authenticate();
+                $query = $blockUserModel->create(['id'=>$user->id,'post_id'=>$post_id,'block_status'=>true]);
+                return ['result' => true, 'IsBlockUser' => true];
+            break; 
+        }
+
+    }
     public function delete(Request $request){ // düzenlenicek
        $model = new Posts;
        $post_id = $request->input('post_id');
