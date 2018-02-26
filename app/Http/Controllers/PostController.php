@@ -89,6 +89,7 @@ class PostController extends Controller {
         if($block_count >= $condition){
             $query = Posts::findOrFail($post_id);
             $query = $query->delete();
+            $postCount = $modCount - 1;
             if($query){
                 return true;
             }else{

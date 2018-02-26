@@ -20,36 +20,19 @@ class MainController extends Controller {
     public function index(Request $request){
         $postReq = $request->input('postReq');
         $status = $request->input('status');
-        $model = new Posts;
-        $result = $model->get();
-        $postCount = count($result);
         $user = JWTAuth::parseToken()->authenticate();
+        $blockModel = new BlockPost;
+        $model = new Posts;
+        $blockPost = $blockModel->where('user_id', '=' , $user->id)->get();
+        $totalPost = $model->get();
+        $postCount = count($totalPost) - count($blockPost);
         $query = Users::where('id','=',$user->id)->first();
         if($query->rank == 0){
             $query = $model->with(['User','Likes'])->where('confirmation','=',1)->orWhere('id','=',$user->id)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         }else{
-            
-           /* $query = DB::select(`p.*`)
-            ->from(`posts as p`)
-            ->join(`block_post as bp`, function($join) {
-                $join->on(DB::raw(`(p.post_id = bp.post_id)` ));
-            })*/
-            
-            //->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
-           // $query = Posts::leftJoin('block_post','posts.post_id','=','block_post.post_id')->whereNull(`block_post.user_id`)->get();
-                
-            /*$query = Posts::leftJoin('block_post',function($q) use ($user){
-                $q->on('block_post.post_id','=','posts.post_id');
-                    
-            })->get();
-            //->whereNull(`block_post.user_id`)
-            //->get();*/
-
-
-            $query = Posts::leftJoin('block_post', function ($join) use ($user) {
-                $join->on('posts.post_id', '=', 'block_post.post_id');
-            })->whereRaw('block_post.user_id = 2 IS NULL')->select('posts.*')->get(4);
-            
+            $query = Posts::leftJoin('block_post', function ($join) use ($user){
+                $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
+            })->whereRaw('block_post.user_id IS NULL')->select('posts.*')->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();   
         }
         return ['data' => $query,
                 'postCount' => $postCount,
