@@ -15,7 +15,7 @@ class CreateBlockUserTable extends Migration
     {
         Schema::create('block_user', function (Blueprint $table) {
             $table->increments('block_id');
-            $table->integer('id');
+            $table->integer('user_id');
             $table->integer('block_user_id');
             $table->softDeletes();
             $table->timestamp('created_at')->useCurrent();

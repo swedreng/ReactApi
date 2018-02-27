@@ -8,7 +8,7 @@ class BlockUser extends Model {
     protected $softDelete = true;
     protected $table = 'block_user';
     protected $primaryKey = 'block_id';
-    protected $fillable = ['id','block_user_id'];
+    protected $fillable = ['user_id','block_user_id'];
     protected $hidden = [];
     
 }

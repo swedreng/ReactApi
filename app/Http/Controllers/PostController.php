@@ -43,7 +43,8 @@ class PostController extends Controller {
             $query = $model->orderBy('post_id','desc')->take(1)->first();
             $modelConf = new PostConfirmation;
             $query = $modelConf->create(['post_id' => $query->post_id,'confirmation_count' => 0]);
-            if($query){
+            $query2 = ModBlockPost::create(['post_id' => $query->post_id, 'block_count' => 0]);
+            if($query && $query2){
                 return ['message' => 'Profilinizde paylaşıldı.',
                 'success' => true];
             }else{
@@ -117,12 +118,14 @@ class PostController extends Controller {
         $post_id = $request->input('post_id'); 
         $blockPostModel = new BlockPost;
         $user = JWTAuth::parseToken()->authenticate();
-        
+        $model = new Posts;
         switch($user->rank){
             case 0:
                 $user = JWTAuth::parseToken()->authenticate();
                 $query = $blockPostModel->create(['user_id'=>$user->id,'post_id'=>$post_id]);
-                return ['result' => false, 'IsBlockPost' => true];
+                $query = $model->get();
+                $postCount = count($query);
+                return ['IsBlockPost' => true, 'postCount' => $postCount];
             break;
             case 2:
                 $user = JWTAuth::parseToken()->authenticate();
@@ -130,9 +133,11 @@ class PostController extends Controller {
                 if($query){
                     $result = $this->blockPostCount($post_id);
                     if($result){
-                        return ['result' => true,'IsBlockPost' => true];
+                        $query = $model->get();
+                        $postCount = count($query);
+                        return ['IsBlockPost' => true, 'postCount' => $postCount];
                     }else{
-                        return ['result' => false,'IsBlockPost' => true];
+                        return ['IsBlockPost' => true, 'postCount' => $postCount];
                     }
                 }
             break; 
@@ -140,21 +145,24 @@ class PostController extends Controller {
            
     }
     public function blockUser(Request $request){
-        $post_id = $request->input('post_id');
         $user_id = $request->input('user_id');
         $blockUserModel = new BlockUser;
+        $model = new Posts;
         $user = JWTAuth::parseToken()->authenticate();
-        $query = $blockUserModel->where('post_id','=',$post_id)->first();
         switch($user->rank){
             case 0:
                 $user = JWTAuth::parseToken()->authenticate();
-                $query = $blockUserModel->create(['id'=>$user->id,'block_user_id'=>$user_id,'block_status'=>true]);
-                return ['result' => true, 'IsBlockUser' => true];
+                $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);
+                $query = $model->get();
+                $postCount = count($query);
+                return ['IsBlockUser' => true,'postCount' => $postCount];
             break;
             case 2:
                 $user = JWTAuth::parseToken()->authenticate();
-                $query = $blockUserModel->create(['id'=>$user->id,'post_id'=>$post_id,'block_status'=>true]);
-                return ['result' => true, 'IsBlockUser' => true];
+                $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);
+                $query = $model->get();
+                $postCount = count($query);
+                return ['IsBlockUser' => true,'postCount' => $postCount];
             break; 
         }
 
