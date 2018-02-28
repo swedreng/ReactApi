@@ -4,6 +4,7 @@ use Validator;
 use App\Models\NoLoginPosts;
 use App\Models\NoLoginComments;
 use App\Models\Comments;
+use App\Models\Contact;
 use App\Http\Controllers\Controller; 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -44,6 +45,26 @@ class NoLoginMainController extends Controller {
             return ['data' => $query];
         }
         
+    }
+
+    public function contact(Request $request){
+        $model = new Contact;
+        $choose = $request->input('choose');
+        if($choose == 1){
+            $choose = 'Hesabımla ilgili bir sorun';
+        }else if($choose == 2){
+            $choose = 'Tavsiye';
+        }else if($choose == 3){
+            $choose = 'Reklam';
+        }else{
+            $choose = 'iletisim';
+        }
+        $query = $model->create(['nameSurname' => $request->input('name'),'email' => $request->input('email'),'issue' => $choose,'message' => $request->input('message')]);
+        if($query){
+            return ['message' => 'Başarıyla mesajınız iletildi.','result'=>true];
+        }else{
+            return ['message' => 'Bir sorun oluştu mesajınız iletilemedi.','result' => false];
+        }
     }
     
 

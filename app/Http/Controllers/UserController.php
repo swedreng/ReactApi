@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use JWTAuth;
 use Validator;
 use App\Models\Users;
+use App\Models\Posts;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -14,21 +15,26 @@ use Illuminate\Http\Response;
 use App\Http\Requests\FileUploadPostRequest; 
 use App\Http\Requests\UserUpdate; 
 
-
 class UserController extends Controller {
 
     public function index(Request $request){
        
         
     }
-  
+    
     public function get(){ // +
         $model = new Users;
         $user = JWTAuth::parseToken()->authenticate();
         $query = $model->findorFail($user->id);
         return $query;
     }
-
+    public function getUserposts(Request $request){
+        $model = new Posts;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $model->where('id','=',$user->id)->orderByRaw('post_id DESC')->paginate(1);
+        return $query;
+    }
+    
     public function update(UserUpdate $request){ // +
         
         $model = new Users;
