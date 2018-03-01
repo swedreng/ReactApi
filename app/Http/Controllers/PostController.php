@@ -174,6 +174,19 @@ class PostController extends Controller {
        $query = Users::where('id','=',$user->id)->first();
        
        switch($query->rank){
+           case 0: 
+                $queryPost = $model->where('post_id','=',$post_id)->first();
+                if($query->id == $queryPost->id){
+                    $query = $model->findOrFail($post_id);
+                    $result = $query->delete();
+                    $posts = $model->get();
+                    $postCount = count($posts);
+                    return ['result' => $result,
+                    'postCount' => $postCount];
+                }else{
+                    return ['result' => false,
+                    'message' => 'Size ait olmayan bir postu silmeye çalışıyorsunuz.'];
+                }
            case 1:
                 $query = $model->findOrFail($post_id);
                 $result = $query->delete();

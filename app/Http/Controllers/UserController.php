@@ -21,18 +21,26 @@ class UserController extends Controller {
        
         
     }
-    
+
     public function get(){ // +
         $model = new Users;
         $user = JWTAuth::parseToken()->authenticate();
         $query = $model->findorFail($user->id);
         return $query;
     }
+
     public function getUserposts(Request $request){
-        $model = new Posts;
+        $postReq = $request->input('postReq');
+        $status = $request->input('status');
         $user = JWTAuth::parseToken()->authenticate();
-        $query = $model->where('id','=',$user->id)->orderByRaw('post_id DESC')->paginate(1);
-        return $query;
+        $model = new Posts;
+        $userPost = $model->where('id', '=' , $user->id)->get();
+        $postCount = count($userPost);
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $model->with(['User','Likes'])->where('id','=',$user->id)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        return ['data' => $query,
+        'postCount' => $postCount,
+        'event' => $status];
     }
     
     public function update(UserUpdate $request){ // +
