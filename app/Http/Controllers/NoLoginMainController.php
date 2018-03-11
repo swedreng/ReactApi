@@ -68,23 +68,18 @@ class NoLoginMainController extends Controller {
         }
     }
     public function Search(Request $request){
+        $postReq = $request->input('postReq');
+        $event = $request->input('event');
         $modelPost = new NoLoginPosts;
         $modelUser = new Users;
         $search = $request->input('search');
-        $a = 5;
-//$modelPost->where('posts', 'LIKE', '%'.$search.'%')->get();
         $Users = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->get();
-        $Posts = $modelPost->leftJoin('comments', function ($join) use ($a){
-            $join->on('posts.post_id', '=', 'comments.post_id');
-        })
-        ->with(['User','Likes','Comments'])->where('writing' , 'LIKE', '%'.$search.'%')->get();
+        $Posts = $modelPost->with(['User','Likes','Comments'])->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $Post = $modelPost->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->get();
+        $postCount = count($Post);
         return ['Users' => $Users,
-                'Posts' => $Posts];
-
-                /* SELECT * FROM `posts` 
-LEFT JOIN comments ON posts.post_id = comments.post_id 
-WHERE writing LIKE 'rag%' */
-
+                'data' => $Posts,
+                'postCount' => $postCount,
+                'event' => $event ];
     }
-
 }

@@ -142,5 +142,22 @@ class MainController extends Controller {
                     'success' => false];
         }
     }
+    public function search(Request $request){
+        $postReq = $request->input('postReq');
+        $event = $request->input('event');
+        $modelPost = new Posts;
+        $modelUser = new Users; 
+        $search = $request->input('search');
+        $Users = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->get();
+        $Posts = $modelPost->with(['User','Likes','Comments'])->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $Post = $modelPost->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->get();
+        $postCount = count($Post);
+        return ['Users' => $Users,
+                'data' => $Posts,
+                'postCount' => $postCount,
+                'event' => $event ];
+    }
+        
+    
 
 }

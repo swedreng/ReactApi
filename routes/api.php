@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
     Route::post('/postsdefault', ['uses' => 'NoLoginMainController@index']);
     Route::post('/outgetcomment', ['uses' => 'NoLoginMainController@getComments']);
     Route::post('/contact', ['uses' => 'NoLoginMainController@contact']);
-    Route::post('/search',['uses' => 'NoLoginMainController@Search']);
+    Route::post('/nologinsearch',['uses' => 'NoLoginMainController@Search']);
 // Tokenli requestler 
 
 Route::group(['middleware' => ['jwt.auth']], function () {
-    
+    Route::post('/loginsearch',['uses' => 'MainController@search']);
     Route::post('/posts', ['uses' => 'MainController@index']);
     Route::post('/post/confirmation', ['uses' => 'PostController@postConfirmation']);
     Route::post('/post/blockPost', ['uses' => 'PostController@blockPost']);
