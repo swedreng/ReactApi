@@ -82,4 +82,18 @@ class NoLoginMainController extends Controller {
                 'postCount' => $postCount,
                 'event' => $event ];
     }
+
+    public function viewProfile(Request $request){
+        $postReq = $request->input('postReq');
+        $person_id = $request->input('person_id');
+        $modelUser = new Users;
+        $modelPost = new NoLoginPosts;
+        $Users = $modelUser->where('id','=',$person_id)->first();
+        $Posts = $modelPost->with(['User','Likes','Comments'])->where('id','=',$person_id)->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $Post = $modelPost->where('id','=',$person_id)->where('confirmation','=',1)->get();
+        $postCount = count($Post);
+        return ['Users' => $Users,
+                'data' => $Posts,
+                'postCount' => $postCount];
+    }
 }
