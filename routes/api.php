@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 // Tokenli requestler 
 
 Route::group(['middleware' => ['jwt.auth']], function () {
+    Route::post('/loginviewprofile',['uses' => 'MainController@LoginviewProfile']);
     Route::post('/loginsearch',['uses' => 'MainController@search']);
     Route::post('/posts', ['uses' => 'MainController@index']);
     Route::post('/post/confirmation', ['uses' => 'PostController@postConfirmation']);
