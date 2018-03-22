@@ -6,9 +6,11 @@ use App\Models\NoLoginComments;
 use App\Models\Users;
 use App\Models\Comments;
 use App\Models\Contact;
+use App\Models\PasswordReset;
 use App\Http\Controllers\Controller; 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Mail;
 
 
 class NoLoginMainController extends Controller {
@@ -95,5 +97,60 @@ class NoLoginMainController extends Controller {
         return ['Users' => $Users,
                 'data' => $Posts,
                 'postCount' => $postCount];
+    }
+
+    public function passwordReset(Request $request){
+        $title = 'Şifre Sıfırla';
+        $content = 'Meraba kullanıcı';
+        $email = $request->input('email');
+        $userModel = new Users;
+        $passwordResetModel = new PasswordReset;
+        $query = $userModel->where('email','=',$email)->first();
+        if($query){
+             
+            $status = $passwordResetModel->where('email','=',$email)->first();
+            if($status){
+                return ['message' => 'Bu işlemi zaten gerçekleştirdiniz, lütfen email adresinize yolladığımız linkten devam ediniz..'];
+            }else{
+                $token = str_random(60);
+                $result = $passwordResetModel->create(['user_id' => $query->id, 'token' => $token, 'email' => $query->email]);
+                Mail::send('emails.send', ['title' => $title, 'content' => $content,'token' => $token] , function ($message)
+                {
+                    $message->from('info@opanc.com','Opac Şifre Sıfırlama');
+                    $message->to('anil.gurler.94@gmail.com');
+        
+                });
+              
+                return ['message' => 'Mail adresinize yolladığımız linkle şifrenizi güncelleyebilirsiniz..'];
+            }
+           
+           
+        }else{
+            return ['message' => 'Sistemde bu emaile kayıtlı bir kullanıcı bulunmamaktadır, lütfen kontrol edip tekrar deneyiniz..'];
+        }
+       
+    }
+
+    public function passwordUpdate(Request $request){
+        $token = $request->input('token');
+        $newPassword = $request->input('password');
+        $passwordResetModel = new PasswordReset;
+        $userModel = new Users;
+        $query = $passwordResetModel->where('token','=',$token)->first();
+
+        if($query){
+            
+            $result = $userModel->where('id','=',$query->user_id)->first();
+            $result->password = $newPassword;
+            $result->save();
+            if($result){
+                $query = $passwordResetModel->findOrFail($query->password_reset_id);
+                $query->delete();
+                return ['message' => 'Başarıyla şifrenizi sıfırladınız, yeniden giriş yapabilirsiniz..'];
+            }
+            
+        }else{
+            return ['message' => 'Bu şifre sıfırlama linki artık kullanılmıyor, lütfen şifre sıfırlama işlemini yeniden deneyiniz.'];
+        }
     }
 }

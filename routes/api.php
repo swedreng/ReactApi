@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
     Route::post('/contact', ['uses' => 'NoLoginMainController@contact']);
     Route::post('/nologinsearch',['uses' => 'NoLoginMainController@Search']);
     Route::post('/viewprofile',['uses' => 'NoLoginMainController@viewProfile']);
+    Route::post('/passwordreset',['uses' => 'NoLoginMainController@passwordReset']);
+    Route::post('/passwordupdate',['uses' => 'NoLoginMainController@passwordUpdate']);
 // Tokenli requestler 
 
 Route::group(['middleware' => ['jwt.auth']], function () {
