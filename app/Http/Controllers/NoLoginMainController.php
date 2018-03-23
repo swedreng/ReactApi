@@ -124,7 +124,6 @@ class NoLoginMainController extends Controller {
                 return ['message' => 'Mail adresinize yolladığımız linkle şifrenizi güncelleyebilirsiniz..'];
             }
            
-           
         }else{
             return ['message' => 'Sistemde bu emaile kayıtlı bir kullanıcı bulunmamaktadır, lütfen kontrol edip tekrar deneyiniz..'];
         }
@@ -150,7 +149,7 @@ class NoLoginMainController extends Controller {
             }
             
         }else{
-            return ['message' => 'Bu şifre sıfırlama linki artık kullanılmıyor, lütfen şifre sıfırlama işlemini yeniden deneyiniz.'];
+            return ['message' => 'Bu şifre sıfırlama linki artık kullanılmıyor, lütfen şifre sıfırlama işlemi için yeni link alınız.'];
         }
     }
 }
