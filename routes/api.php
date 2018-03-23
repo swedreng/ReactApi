@@ -13,6 +13,11 @@ use Illuminate\Http\Request;
     Route::post('/viewprofile',['uses' => 'NoLoginMainController@viewProfile']);
     Route::post('/passwordreset',['uses' => 'NoLoginMainController@passwordReset']);
     Route::post('/passwordupdate',['uses' => 'NoLoginMainController@passwordUpdate']);
+    
+Route::group(['middleware' => ['web']], function () {
+    Route::get('auth/{provider}', 'FacebookLoginController@redirectProvider');
+    Route::get('auth/{provider}/callback', 'FacebookLoginController@ProviderCallback');
+});
 // Tokenli requestler 
 
 Route::group(['middleware' => ['jwt.auth']], function () {
