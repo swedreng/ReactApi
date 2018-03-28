@@ -7,6 +7,7 @@ use App\Models\Posts;
 use App\Models\BlockUser;
 use App\Models\Comments;
 use App\Models\BlockPost;
+use App\Models\PostCategory;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -55,7 +56,7 @@ class MainController extends Controller {
             ->leftJoin('block_user', function ($join) use ($user){
                 $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
             })
-            ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL')->select('posts.*')->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get(); 
+            ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL')->select('posts.*')->with(['User','Likes','PostCategory'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get(); 
 
             $userPostCount = $model
             ->leftJoin('block_post', function ($join) use ($user){

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Like;
 use App\Models\Comments;
 use App\Models\ModConfirmation;
+use App\Models\PostCategory;
 use Carbon\Carbon;
 
 class Posts extends Model {
@@ -23,7 +24,6 @@ class Posts extends Model {
         'Time',
         'IsConfirmationPost',
         'IsBlockPost',
-
     ];
    //protected $dates = ['created_at'];
 
@@ -35,7 +35,6 @@ class Posts extends Model {
 		});
     }
 
-  
     public function User() {
 		  return $this->hasOne('App\Models\Users', 'id', 'id');
     }
@@ -49,9 +48,11 @@ class Posts extends Model {
     public function Likes() {
       return $this->hasMany('App\Models\Like', 'post_id' , 'post_id');
     }
-    
     public function getImageAttribute($image){
       return env('APP_URL').$image;
+    }
+    public function PostCategory() {
+      return $this->hasMany('App\Models\PostCategory', 'post_id', 'post_id');
     }
     //public function CommentsLast($commentCount) {
       //return $this->hasMany('App\Models\Comments', 'postpicture_id', 'postpicture_id')->with('User')->orderBy('like', 'desc')->orderBy('comment_id','asc')->skip($commentCount-3)->take(3);

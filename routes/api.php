@@ -27,6 +27,9 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/post/confirmation', ['uses' => 'PostController@postConfirmation']);
     Route::post('/post/blockPost', ['uses' => 'PostController@blockPost']);
     Route::post('/post/blockUser', ['uses' => 'PostController@blockUser']);
+    Route::post('/post/userconfirmation', ['uses' => 'PostController@userConfirmation']);
+    Route::post('/post/setcategory', ['uses' => 'ModeratorController@setCategory']);
+    Route::post('/post/getcategory', ['uses' => 'ModeratorController@getCategory']);
     Route::post('/postlike', ['uses' => 'PostController@Like']);
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   

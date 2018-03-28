@@ -8,6 +8,7 @@ use App\Models\PostConfirmation;
 use App\Models\BlockPost;
 use App\Models\BlockUser;
 use App\Models\ModBlockPost;
+use App\Models\UserPostBanned;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Response;
 use App\Http\Requests\FileUploadPostRequest; 
+use Google\Cloud\Vision\VisionClient;
 
 class PostController extends Controller {
 
@@ -25,14 +27,35 @@ class PostController extends Controller {
     }
 
     public function createpp(FileUploadPostRequest $request){ // +
+
         $model = new Posts;
         $writing = $request->input('writing');
         $files = $request->file('files');
+        $user = JWTAuth::parseToken()->authenticate();    
+        $query = Users::where('id','=',$user->id)->first();
+
+        if($query->rank == 0 || $query->quality_user == 0){
+        $projectId = 'plated-course-199311';
+        $config = [
+            'keyFile' => json_decode(Storage::disk('local')->get('test.json'), true),
+            'projectId' => $projectId,
+        ];
+        $vision = new VisionClient($config);
+        $image = $vision->image(fopen($files, 'r'), [
+            'SAFE_SEARCH_DETECTION','LABEL_DETECTION'
+        ],["languageHints" => 'tr']);    
+        $result = $vision->annotate($image);
+        print("LABELS:\n");
+        foreach ($result->labels() as $label) {
+            print($label->description() . PHP_EOL);
+        }
+        return ['message' => $result->isAdult()];
+        }    
+    
         $extension = $files->getClientOriginalExtension(); //jpg
         Storage::disk('public')->put($files->getClientOriginalName(), File::get($files));
         $image = Storage::url($files->getClientOriginalName());
-        $user = JWTAuth::parseToken()->authenticate();
-        $query = Users::where('id','=',$user->id)->first();
+        
         if($query->rank == 1){
             $result = $model->create(['id' => $user->id ,'writing'=> $writing, 'image' => $image ,'confirmation' => true ,'kind' => 'picture']);
         }else{
@@ -144,15 +167,24 @@ class PostController extends Controller {
         }
            
     }
+    public function userConfirmation(Request $request){ // Düzenlenecek filtrelenecek
+        $user_id = $request->input('user_id');
+        $model = new Users;
+        $query = $model->where('id','=',$user_id)->first();
+        $query->quality_user = true;
+        $query->save();
+    }
     public function blockUser(Request $request){
         $user_id = $request->input('user_id');
         $blockUserModel = new BlockUser;
+        $blockPostBanned = new BlockPostBanned;
         $model = new Posts;
         $user = JWTAuth::parseToken()->authenticate();
         switch($user->rank){
             case 0:
                 $user = JWTAuth::parseToken()->authenticate();
                 $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);
+                $query = $blockPostBanned->create(['mod_id' => $user->id,'banned_user_id' => $user_id]);
                 $query = $model->get();
                 $postCount = count($query);
                 return ['IsBlockUser' => true,'postCount' => $postCount];
