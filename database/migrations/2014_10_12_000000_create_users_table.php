@@ -24,7 +24,6 @@ class CreateUsersTable extends Migration
             $table->string('adress')->nullable();
             $table->string('personalwriting')->nullable();
             $table->string('pp')->default('/storage/users.png');
-            $table->boolean('quality_user')->default(0);
             $table->integer('rank')->default(0);
             $table->rememberToken();
             $table->softDeletes();

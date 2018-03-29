@@ -171,7 +171,7 @@ class PostController extends Controller {
         $user_id = $request->input('user_id');
         $model = new Users;
         $query = $model->where('id','=',$user_id)->first();
-        $query->quality_user = true;
+        $query->rank = 4;
         $query->save();
     }
     public function blockUser(Request $request){

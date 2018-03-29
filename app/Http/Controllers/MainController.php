@@ -71,7 +71,7 @@ class MainController extends Controller {
         }else{
             $query = Posts::leftJoin('block_post', function ($join) use ($user){
                 $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
-            })->whereRaw('block_post.user_id IS NULL')->select('posts.*')->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+            })->whereRaw('block_post.user_id IS NULL')->select('posts.*')->with(['User','Likes','PostCategory'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         }
         return ['data' => $query,
                 'postCount' => $postCount,
