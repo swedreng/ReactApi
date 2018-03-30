@@ -44,7 +44,6 @@ class Posts extends Model {
     public function Comment() {
       return $this->hasOne('App\Models\Comments', 'post_id', 'post_id')->with('User');
     }
-    
     public function Likes() {
       return $this->hasMany('App\Models\Like', 'post_id' , 'post_id');
     }

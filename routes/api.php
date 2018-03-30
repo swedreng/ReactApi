@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
     Route::post('/viewprofile',['uses' => 'NoLoginMainController@viewProfile']);
     Route::post('/passwordreset',['uses' => 'NoLoginMainController@passwordReset']);
     Route::post('/passwordupdate',['uses' => 'NoLoginMainController@passwordUpdate']);
-    
+    Route::post('/post/getcategory', ['uses' => 'ModeratorController@getCategory']);
 Route::group(['middleware' => ['web']], function () {
     Route::get('auth/{provider}', 'FacebookLoginController@redirectProvider');
     Route::get('auth/{provider}/callback', 'FacebookLoginController@ProviderCallback');
@@ -29,7 +29,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/post/blockUser', ['uses' => 'PostController@blockUser']);
     Route::post('/post/userconfirmation', ['uses' => 'PostController@userConfirmation']);
     Route::post('/post/setcategory', ['uses' => 'ModeratorController@setCategory']);
-    Route::post('/post/getcategory', ['uses' => 'ModeratorController@getCategory']);
+    
     Route::post('/postlike', ['uses' => 'PostController@Like']);
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   
