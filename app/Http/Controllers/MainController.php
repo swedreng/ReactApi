@@ -234,7 +234,8 @@ class MainController extends Controller {
                             'username' => $username,
                             'role' => $user_info->rank,
                             'user_id' => $user_info->id,
-                            'user_pp' => $user_info->pp];
+                            'user_pp' => $user_info->pp,
+                            'personalwriting' => $user_info->personalwriting];
         
                 }catch (JWTException $e) {
                                 
