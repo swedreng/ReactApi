@@ -16,15 +16,42 @@ use Mail;
 class NoLoginMainController extends Controller {
 
     public function index(Request $request){
+        $filter = $request->input('filter');
         $postReq = $request->input('postReq');
         $status = $request->input('status');
         $model = new NoLoginPosts;
-        $result = $model->get();
-        $postCount = count($result);
-        $query = $model->with(['User','Likes'])->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
-        return ['data' => $query,
-                'postCount' => $postCount,
-                'event' => $status];
+        if(!is_null($filter)){
+            $query = $model
+            ->leftJoin('post_category', function ($join) use ($filter){
+                $join->on('posts.post_id', '=' ,'post_category.post_id');
+            })
+            ->select('posts.*')
+            ->where([['post_category.category_id', '=',$filter],['confirmation','=',1]])
+            ->with(['User','Likes'])
+            ->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+
+            $Count = $model
+            ->leftJoin('post_category', function ($join) use ($filter){
+                $join->on('posts.post_id', '=' ,'post_category.post_id');
+            })
+            ->select('posts.*')
+            ->where([['post_category.category_id', '=',$filter],['confirmation','=',1]])
+            ->with(['User','Likes'])
+            ->orderByRaw('post_id DESC')->get();
+            $postCount = count($Count);
+
+            return ['data' => $query,
+                    'postCount' => $postCount,
+                    'event' => $status];
+        }else{
+            $query = $model->where('confirmation','=',1)->with(['User','Likes'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+            $Count = $model->where('confirmation','=',1)->with(['User','Likes'])->orderByRaw('post_id DESC')->get();
+            $postCount = count($Count);
+            return ['data' => $query,
+                    'postCount' => $postCount,
+                    'event' => $status];
+        }
+      
     }
 
     public function getComments(Request $request){

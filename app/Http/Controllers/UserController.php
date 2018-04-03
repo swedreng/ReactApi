@@ -130,8 +130,19 @@ class UserController extends Controller {
         }
     }
 
-    public function ppdelete(Request $request){
-       // yapılacak.
+    public function setUserInfo(Request $request){
+        $phone = $request->input('phone');
+        $adress = $request->input('adress');
+        $personalwriting = $request->input('personalwriting');
+        $model = new Users;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $model->where('id','=',$user->id)->first();
+        $query->phone = $phone;
+        $query->adress = $adress;
+        $query->personalwriting = $personalwriting;
+        $query->save();
+        return ['message' => "Basarıyla bilgilerinizi güncellediniz.",
+                'success' => true];
     }
 
    

@@ -17,7 +17,6 @@ class CreatePostCategoryTable extends Migration
             $table->increments('post_category_id');
             $table->integer('post_id');
             $table->integer('category_id');
-            $table->softDeletes();
             $table->timestamp('created_at')->useCurrent();
 			$table->timestamp('updated_at')->nullable();
         });

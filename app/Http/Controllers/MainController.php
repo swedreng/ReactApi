@@ -32,10 +32,10 @@ class MainController extends Controller {
         $postCount = count($totalPost) - count($blockPost);
         $query = Users::where('id','=',$user->id)->first();
         if($query->rank == 0){
-            if($filter){
+            if(!is_null($filter)){
 
                 $query = $model
-                ->leftJoin('post_category', function ($join) use ($category_id){
+                ->leftJoin('post_category', function ($join) use ($filter){
                     $join->on('posts.post_id', '=' ,'post_category.post_id');
                 })
                 ->leftJoin('block_post', function ($join) use ($user){
@@ -45,13 +45,13 @@ class MainController extends Controller {
                     $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
                 })
                 ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL')->select('posts.*')
-                ->where('post_category.category_id', '=',$category_id)->first()
-                ->where('confirmation','=',1)->orWhere('id','=',$user->id)
+                ->where('post_category.category_id', '=',$filter)
+                ->where('confirmation','=',1)
                 ->with(['User','Likes','PostCategory'])
                 ->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
 
                 $userPostCount = $model
-                ->leftJoin('post_category', function ($join) use ($category_id){
+                ->leftJoin('post_category', function ($join) use ($filter){
                     $join->on('posts.post_id', '=' ,'post_category.post_id');
                 })
                 ->leftJoin('block_post', function ($join) use ($user){
@@ -61,8 +61,8 @@ class MainController extends Controller {
                     $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
                 })
                 ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL')->select('posts.*')
-                ->where('post_category.category_id', '=',$category_id)->first()
-                ->where('confirmation','=',1)->orWhere('id','=',$user->id)
+                ->where('post_category.category_id', '=',$filter)
+                ->where('confirmation','=',1)
                 ->get();
                 $postCount = count($userPostCount);
 
@@ -103,7 +103,6 @@ class MainController extends Controller {
                 })
                 ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL ')->select('posts.*')
                 ->where('post_category.category_id', '=',$filter)
-                //->where('confirmation','=',1)
                 //->orWhere('id','=',$user->id)
                 ->with(['User','Likes','PostCategory'])
                 ->orderByRaw('post_id DESC')
@@ -121,6 +120,7 @@ class MainController extends Controller {
                 })
                 ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL')->select('posts.*')
                 ->where('post_category.category_id', '=',$filter)
+                //->orWhere('id','=',$user->id)
                 ->get();
                 $postCount = count($userPostCount);
                
@@ -147,13 +147,56 @@ class MainController extends Controller {
             }
 
         }else{
-            $query = Posts::leftJoin('block_post', function ($join) use ($user){
-                $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
-            })->whereRaw('block_post.user_id IS NULL')->select('posts.*')->with(['User','Likes','PostCategory'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+            if(!is_null($filter)){
+                $query = $model
+                ->leftJoin('post_category', function ($join) use ($filter){
+                    $join->on('posts.post_id', '=' ,'post_category.post_id');
+                })
+                ->leftJoin('block_post', function ($join) use ($user){
+                    $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
+                })
+                ->leftJoin('block_user', function ($join) use ($user){
+                    $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
+                })
+                ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL ')->select('posts.*')
+                ->where('post_category.category_id', '=',$filter)
+                //->orWhere('id','=',$user->id)
+                ->with(['User','Likes','PostCategory'])
+                ->orderByRaw('post_id DESC')
+                ->skip($postReq)->take(3)->get();
+
+                $userPostCount = $model
+                ->leftJoin('post_category', function ($join) use ($filter){
+                    $join->on('posts.post_id', '=' ,'post_category.post_id');
+                })
+                ->leftJoin('block_post', function ($join) use ($user){
+                    $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
+                })
+                ->leftJoin('block_user', function ($join) use ($user){
+                    $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
+                })
+                ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL')->select('posts.*')
+                ->where('post_category.category_id', '=',$filter)
+                //->orWhere('id','=',$user->id)
+                ->get();
+                $postCount = count($userPostCount);
+            }else{
+                $query = Posts::leftJoin('block_post', function ($join) use ($user){
+                    $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
+                })->whereRaw('block_post.user_id IS NULL')->select('posts.*')->with(['User','Likes','PostCategory'])->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+
+                $allPostCount = Posts::leftJoin('block_post', function ($join) use ($user){
+                    $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
+                })->whereRaw('block_post.user_id IS NULL')->select('posts.*')->with(['User','Likes','PostCategory'])->orderByRaw('post_id DESC')->get();
+
+                $postCount = count($allPostCount);
+            }
+          
         }
-        return ['data' => $query,
-                'postCount' => $postCount,
-                'event' => $status];
+
+            return ['data' => $query,
+                    'postCount' => $postCount,
+                    'event' => $status];
     }
 
     public function noLogin(Request $request){

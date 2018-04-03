@@ -33,12 +33,8 @@ class ModeratorController extends Controller {
             $categories = $model->where('post_id','=',$post_id)->get();
                 return ['status' => false,'post_categories' => $categories];
         }else{
-            $result = $model->where([['post_id','=',$post_id],['category_id','=',$category_id]])->withTrashed()->first();
-            if(!is_null($result)){
-                $result->restore();
-            }else{
-                $result = $model->create($request->all());
-            }
+           
+            $result = $model->create($request->all());
             $categories = $model->where('post_id','=',$post_id)->get();
             return ['status' => true,'post_categories' => $categories];
 

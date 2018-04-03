@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
     Route::post('/passwordreset',['uses' => 'NoLoginMainController@passwordReset']);
     Route::post('/passwordupdate',['uses' => 'NoLoginMainController@passwordUpdate']);
     Route::post('/post/getcategory', ['uses' => 'ModeratorController@getCategory']);
+
 Route::group(['middleware' => ['web']], function () {
     Route::get('auth/{provider}', 'FacebookLoginController@redirectProvider');
     Route::get('auth/{provider}/callback', 'FacebookLoginController@ProviderCallback');
@@ -42,7 +43,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::put('/user', ['uses' => 'UserController@userInfoupdate']);
     Route::put('/user/emailupdate', ['uses' => 'UserController@userEmailUpdate']);
     Route::put('/user/usernameupdate', ['uses' => 'UserController@UsernameUpdate']);
-    Route::put('/user/passwordupdate', ['uses' => 'UserController@passwordUpdate']); // +
+    Route::put('/user/passwordupdate', ['uses' => 'UserController@passwordUpdate']); 
+    Route::put('/user/setuserinfo', ['uses' => 'UserController@setUserInfo']);// +
     Route::delete('/user', ['uses' => 'UserController@ppdelete']); // yapılacak route u yapıldı.
     Route::post('/user/createpp', ['uses' => 'PostController@createpp']); // createpp = create picture post //+
     Route::post('/user/createwp', ['uses' => 'PostController@createwp']); // createwp = create write post // yapılacak route u ve fonskiyonu olusturuldu.
