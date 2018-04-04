@@ -4,6 +4,7 @@ use JWTAuth;
 use Validator;
 use App\Models\Users;
 use App\Models\Posts;
+use App\Models\UserInfo;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -19,12 +20,8 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller {
 
-    public function index(Request $request){
-       
-        
-    }
 
-    public function get (){ // +
+    public function get (){
         $model = new Users;
         $user = JWTAuth::parseToken()->authenticate();
         $query = $model->findorFail($user->id);
@@ -56,13 +53,15 @@ class UserController extends Controller {
                 $query->firstname = $value;
                 $query->save();
                 return ['message' => "Basarıyla isminizi güncellediniz.",
-                        'success' => true];
+                        'success' => true,
+                        'status' => 1];
             break;
             default:
                 $query->lastname = $value;
                 $query->save();
                 return ['message' => "Basarıyla soyisminizi güncellediniz.",
-                        'success' => true];
+                        'success' => true,
+                        'status' => 2];
             break;    
         }      
     }
@@ -141,22 +140,68 @@ class UserController extends Controller {
                 $query->phone = $value;
                 $query->save();
                 return ['message' => "Basarıyla telefonunuzu güncellediniz.",
-                        'success' => true];
+                        'success' => true,
+                        'status' => 1];
             break;
             case 2:
                 $query->adress = $value;
                 $query->save();
                 return ['message' => "Basarıyla adresinizi güncellediniz.",
-                        'success' => true];
+                        'success' => true,
+                        'status' => 2];
             break;
             default:
                 $query->personalwriting = $value;
                 $query->save();
                 return ['message' => "Basarıyla kişisel yazınızı güncellediniz.",
-                        'success' => true];
+                        'success' => true,
+                        'status' => 3];
             break;    
         }      
 
     }
+
+
+    public function setSocialMedia(Request $request){
+        $value = $request->input('value');
+        $status = $request->input('status');
+        $model = new UserInfo;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $model->where('user_id','=',$user->id)->first();
+        switch($status){
+            case 1:
+                $query->facebook = $value;
+                $query->save();
+                return ['message' => "Basarıyla facebook adresinizi güncellediniz.",
+                        'success' => true,
+                        'status' => 1];
+            break;
+            case 2:
+                $query->twitter = $value;
+                $query->save();
+                return ['message' => "Basarıyla twitter adresinizi güncellediniz.",
+                        'success' => true,
+                        'status' => 2];
+            break;
+            default:
+                $query->instagram = $value;
+                $query->save();
+                return ['message' => "Basarıyla instagram adresinizi güncellediniz.",
+                        'success' => true,
+                        'status' => 3];
+            break;    
+        }      
+
+    }
+
+    public function getSocialMedia(Request $request){
+        $model = new UserInfo;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $model->findorFail($user->id);
+        return ['data' => $query];
+    }
  
+    public function getShareInfo(Request $request){
+        
+    }
 }

@@ -44,7 +44,10 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::put('/user/emailupdate', ['uses' => 'UserController@userEmailUpdate']);
     Route::put('/user/usernameupdate', ['uses' => 'UserController@UsernameUpdate']);
     Route::put('/user/passwordupdate', ['uses' => 'UserController@passwordUpdate']); 
-    Route::post('/user/setuserinfo', ['uses' => 'UserController@setUserInfo']);// +
+    Route::post('/user/setuserinfo', ['uses' => 'UserController@setUserInfo']);
+    Route::post('/user/setsocialmedia', ['uses' => 'UserController@setSocialMedia']); 
+    Route::get('/user/getsocialmedia', ['uses' => 'UserController@getSocialMedia']); 
+    Route::get('/user/getshareInfo', ['uses' => 'UserController@getShareInfo']);
     Route::delete('/user', ['uses' => 'UserController@ppdelete']); // yapılacak route u yapıldı.
     Route::post('/user/createpp', ['uses' => 'PostController@createpp']); // createpp = create picture post //+
     Route::post('/user/createwp', ['uses' => 'PostController@createwp']); // createwp = create write post // yapılacak route u ve fonskiyonu olusturuldu.

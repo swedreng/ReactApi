@@ -14,8 +14,14 @@ class CreateUserInfoTable extends Migration
     public function up()
     {
         Schema::create('user_info', function (Blueprint $table) {
-            $table->increments('id');
-            $table->timestamps();
+            $table->increments('user_info_id')->unsigned();
+            $table->integer('user_id');
+            $table->string('facebook')->nullable();;
+            $table->string('twitter')->nullable();;
+            $table->string('instagram')->nullable();;
+            $table->softDeletes();
+			$table->timestamp('created_at')->useCurrent();
+			$table->timestamp('updated_at')->nullable();
         });
     }
 

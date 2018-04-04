@@ -8,6 +8,7 @@ use App\Models\BlockUser;
 use App\Models\Comments;
 use App\Models\BlockPost;
 use App\Models\PostCategory;
+use App\Models\UserInfo;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -258,8 +259,13 @@ class MainController extends Controller {
         $query = $model->create($request->all());
         $result = $query->findOrFail($query->id);
         if($result){
-            return ['message' => 'Basarıyla kayıt oldunuz.',
-                    'success' => true];
+            $userInfoModel = new UserInfo;
+            $result = $userInfoModel->create(['user_id' => $query->id]);
+            if($result){
+                return ['message' => 'Basarıyla kayıt oldunuz.',
+                'success' => true];
+            }
+            
         }else{
             return ['message' => 'Kayıt olamadınız bir sorun olustu lütfen daha sonra tekrar deneyiniz.',
                     'success' => false];
@@ -283,16 +289,17 @@ class MainController extends Controller {
     
     public function LoginviewProfile(Request $request){
         $postReq = $request->input('postReq');
-        $person_id = $request->input('person_id');
+        $person_username = $request->input('person_username');
         $modelUser = new Users;
         $modelPost = new Posts;
-        $Users = $modelUser->where('id','=',$person_id)->first();
-        $Posts = $modelPost->with(['User','Likes','Comments'])->where('id','=',$person_id)->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
-        $Post = $modelPost->where('id','=',$person_id)->where('confirmation','=',1)->get();
+        $Users = $modelUser->where('username','=',$person_username)->first();
+        $Posts = $modelPost->with(['User','Likes','Comments'])->where('id','=',$Users->id)->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $Post = $modelPost->where('id','=',$Users->id)->where('confirmation','=',1)->get();
         $postCount = count($Post);
         return ['Users' => $Users,
                 'data' => $Posts,
-                'postCount' => $postCount];
+                'postCount' => $postCount,
+                'username' => $Users->username];
     }
         
 }
