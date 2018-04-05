@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
     Route::post('/passwordreset',['uses' => 'NoLoginMainController@passwordReset']);
     Route::post('/passwordupdate',['uses' => 'NoLoginMainController@passwordUpdate']);
     Route::post('/post/getcategory', ['uses' => 'ModeratorController@getCategory']);
-
+    Route::get('/bestposttoday', ['uses' => 'NoLoginMainController@bestPostToday']);
+    Route::post('/getbestpost', ['uses' => 'NoLoginMainController@bestPost']);
 Route::group(['middleware' => ['web']], function () {
     Route::get('auth/{provider}', 'FacebookLoginController@redirectProvider');
     Route::get('auth/{provider}/callback', 'FacebookLoginController@ProviderCallback');
@@ -47,7 +48,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/user/setuserinfo', ['uses' => 'UserController@setUserInfo']);
     Route::post('/user/setsocialmedia', ['uses' => 'UserController@setSocialMedia']); 
     Route::get('/user/getsocialmedia', ['uses' => 'UserController@getSocialMedia']); 
-    Route::get('/user/getshareInfo', ['uses' => 'UserController@getShareInfo']);
+    Route::post('/user/getviewsocialmedia', ['uses' => 'UserController@getViewSocialMedia']); 
+    Route::post('/user/getshareInfo', ['uses' => 'UserController@getShareInfo']);
     Route::delete('/user', ['uses' => 'UserController@ppdelete']); // yapılacak route u yapıldı.
     Route::post('/user/createpp', ['uses' => 'PostController@createpp']); // createpp = create picture post //+
     Route::post('/user/createwp', ['uses' => 'PostController@createwp']); // createwp = create write post // yapılacak route u ve fonskiyonu olusturuldu.

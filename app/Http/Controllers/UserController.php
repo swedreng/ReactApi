@@ -4,6 +4,7 @@ use JWTAuth;
 use Validator;
 use App\Models\Users;
 use App\Models\Posts;
+use App\Models\Comments;
 use App\Models\UserInfo;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -23,9 +24,18 @@ class UserController extends Controller {
 
     public function get (){
         $model = new Users;
+        $modelPost = new Posts;
+        $modelComment = new Comments;
         $user = JWTAuth::parseToken()->authenticate();
+        $posts = $modelPost->where([['id','=',$user->id],['confirmation','=',1]])->get();
+        $comments = $modelComment->where('id','=',$user->id)->get();
+        $postCount = count($posts);
+        $commentCount = count ($comments);
         $query = $model->findorFail($user->id);
-        return $query;
+
+        return ['user_info' => $query,
+                'commentCount' => $commentCount,
+                'postCount' => $postCount];
     }
 
     public function getUserposts(Request $request){
@@ -200,8 +210,29 @@ class UserController extends Controller {
         $query = $model->findorFail($user->id);
         return ['data' => $query];
     }
- 
-    public function getShareInfo(Request $request){
+
+    public function getViewSocialMedia(Request $request){
+        $person_username = $request->input('person_username');
+        $model = new UserInfo;
+        $userModel = new Users;
+        $Users = $userModel->where('username','=',$person_username)->first();
+        $query = $model->where('user_id','=',$Users->id)->first();
+        return ['data' => $query];
         
     }
+ 
+    public function getShareInfo(Request $request){
+        $person_username = $request->input('person_username');
+        $userModel = new Users;
+        $postModel = new Posts;
+        $commentModel = new Comments;
+        $Users = $userModel->where('username','=',$person_username)->first();
+        $queryComment = $commentModel->where('id','=',$Users->id)->get();
+        $queryPost = $postModel->where('id','=',$Users->id)->get();
+        $postCount = count($queryPost);
+        $commentCount = count($queryComment);
+        return ['commentCount' => $commentCount,
+                'postCount' => $postCount];
+    }
+
 }

@@ -179,4 +179,18 @@ class NoLoginMainController extends Controller {
             return ['message' => 'Bu şifre sıfırlama linki artık kullanılmıyor, lütfen şifre sıfırlama işlemi için yeni link alınız.'];
         }
     }
+
+
+    public function bestPostToday(Request $request){
+        $model = new NoLoginPosts;
+        $query = $model->with(['User','Likes'])->whereRaw('date(posts.created_at) = date(now())')->orderBy('like', 'DESC')->get()->take(10);
+        return $query;
+    }
+
+    public function bestPost(Request $request){
+        $model = new NoLoginPosts;
+        $post_id = $request->input('post_id');
+        $query = $model->where('post_id','=',$post_id)->first();
+        return $query;
+    }
 }

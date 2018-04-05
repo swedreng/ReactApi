@@ -14,7 +14,7 @@ class Category extends Model {
     protected $appends = [
         'PostCount', 
     ];
-    public function CategoryPostCount() {
+    public function CategoryPostCount(){
         return $this->hasOne('App\Models\PostCategory', 'category_id', 'category_id');
     }
     public function getPostCountAttribute(){

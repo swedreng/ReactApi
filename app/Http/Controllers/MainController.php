@@ -292,13 +292,17 @@ class MainController extends Controller {
         $person_username = $request->input('person_username');
         $modelUser = new Users;
         $modelPost = new Posts;
+        $modelComment = new Comments;
         $Users = $modelUser->where('username','=',$person_username)->first();
         $Posts = $modelPost->with(['User','Likes','Comments'])->where('id','=',$Users->id)->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         $Post = $modelPost->where('id','=',$Users->id)->where('confirmation','=',1)->get();
+        $comments = $modelComment->where('id','=',$Users->id)->get();
+        $commentCount = count($comments);
         $postCount = count($Post);
         return ['Users' => $Users,
                 'data' => $Posts,
                 'postCount' => $postCount,
+                'commentCount' => $commentCount,
                 'username' => $Users->username];
     }
         
