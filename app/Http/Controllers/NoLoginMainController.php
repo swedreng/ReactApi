@@ -190,7 +190,7 @@ class NoLoginMainController extends Controller {
     public function bestPost(Request $request){
         $model = new NoLoginPosts;
         $post_id = $request->input('post_id');
-        $query = $model->where('post_id','=',$post_id)->first();
+        $query = $model->with(['User','Likes'])->where('post_id','=',$post_id)->get();
         return $query;
     }
 }
