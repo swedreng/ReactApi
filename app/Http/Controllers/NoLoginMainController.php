@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Validator;
 use App\Models\NoLoginPosts;
 use App\Models\NoLoginComments;
+use App\Models\Posts;
 use App\Models\Users;
 use App\Models\Comments;
 use App\Models\Contact;
@@ -183,7 +184,7 @@ class NoLoginMainController extends Controller {
 
     public function bestPostToday(Request $request){
         $model = new NoLoginPosts;
-        $query = $model->with(['User','Likes'])->whereRaw('date(posts.created_at) = date(now())')->orderBy('like', 'DESC')->get()->take(10);
+        $query = $model->with(['User','Likes'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->get()->take(10);
         return $query;
     }
 
@@ -192,5 +193,14 @@ class NoLoginMainController extends Controller {
         $post_id = $request->input('post_id');
         $query = $model->with(['User','Likes'])->where('post_id','=',$post_id)->get();
         return $query;
+    }
+    public function topBestPost(Request $request){
+        $postReq = $request->input('value');
+        $model = new NoLoginPosts;
+        $query = $model->with(['User','Likes'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->skip($postReq)->take(3)->get();
+        $posts = $model->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->get();
+        $postCount = count($posts);
+        return ['data' => $query,
+                'postCount' => $postCount];
     }
 }

@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
     Route::post('/post/getcategory', ['uses' => 'ModeratorController@getCategory']);
     Route::get('/bestposttoday', ['uses' => 'NoLoginMainController@bestPostToday']);
     Route::post('/getbestpost', ['uses' => 'NoLoginMainController@bestPost']);
+    Route::post('/topbestposttoday', ['uses' => 'NoLoginMainController@topBestPost']);
 Route::group(['middleware' => ['web']], function () {
     Route::get('auth/{provider}', 'FacebookLoginController@redirectProvider');
     Route::get('auth/{provider}/callback', 'FacebookLoginController@ProviderCallback');

@@ -34,7 +34,7 @@ class PostController extends Controller {
         $user = JWTAuth::parseToken()->authenticate();    
         $query = Users::where('id','=',$user->id)->first();
 
-        if($query->rank == 0 || $query->quality_user == 0){
+       /* if($query->rank == 0 || $query->quality_user == 0){
         $projectId = 'plated-course-199311';
         $config = [
             'keyFile' => json_decode(Storage::disk('local')->get('test.json'), true),
@@ -50,7 +50,7 @@ class PostController extends Controller {
             print($label->description() . PHP_EOL);
         }
         return ['message' => $result->isAdult()];
-        }    
+        }    */
     
         $extension = $files->getClientOriginalExtension(); //jpg
         Storage::disk('public')->put($files->getClientOriginalName(), File::get($files));
