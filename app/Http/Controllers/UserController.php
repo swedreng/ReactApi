@@ -6,6 +6,7 @@ use App\Models\Users;
 use App\Models\Posts;
 use App\Models\Comments;
 use App\Models\UserInfo;
+use App\Models\PostCategory;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -46,7 +47,7 @@ class UserController extends Controller {
         $userPost = $model->where('id', '=' , $user->id)->get();
         $postCount = count($userPost);
         $user = JWTAuth::parseToken()->authenticate();
-        $query = $model->with(['User','Likes'])->where('id','=',$user->id)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $query = $model->with(['User','Likes','PostCategory'])->where('id','=',$user->id)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         return ['data' => $query,
         'postCount' => $postCount,
         'event' => $status];

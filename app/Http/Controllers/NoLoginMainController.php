@@ -8,6 +8,7 @@ use App\Models\Users;
 use App\Models\Comments;
 use App\Models\Contact;
 use App\Models\PasswordReset;
+use App\Models\PostCategory;
 use App\Http\Controllers\Controller; 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -184,20 +185,20 @@ class NoLoginMainController extends Controller {
 
     public function bestPostToday(Request $request){
         $model = new NoLoginPosts;
-        $query = $model->with(['User','Likes'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->get()->take(10);
+        $query = $model->with(['User','Likes','PostCategory'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->get()->take(5);
         return $query;
     }
 
     public function bestPost(Request $request){
         $model = new NoLoginPosts;
         $post_id = $request->input('post_id');
-        $query = $model->with(['User','Likes'])->where('post_id','=',$post_id)->get();
+        $query = $model->with(['User','Likes','PostCategory'])->where('post_id','=',$post_id)->get();
         return $query;
     }
     public function topBestPost(Request $request){
         $postReq = $request->input('value');
         $model = new NoLoginPosts;
-        $query = $model->with(['User','Likes'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->skip($postReq)->take(3)->get();
+        $query = $model->with(['User','Likes','PostCategory'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->skip($postReq)->take(3)->get();
         $posts = $model->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->get();
         $postCount = count($posts);
         return ['data' => $query,

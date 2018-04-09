@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Like;
 use App\Models\Comments;
+use App\Models\PostCategory;
 use Carbon\Carbon;
 
 class NoLoginPosts extends Model {
@@ -35,7 +36,9 @@ class NoLoginPosts extends Model {
     public function Likes() {
       return $this->hasMany('App\Models\Like', 'post_id' , 'post_id');
     }
-
+    public function PostCategory() {
+      return $this->hasMany('App\Models\PostCategory', 'post_id', 'post_id');
+    }
     public function getImageAttribute($image){
       return env('APP_URL').$image;
     }
