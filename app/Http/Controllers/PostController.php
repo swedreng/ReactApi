@@ -177,14 +177,13 @@ class PostController extends Controller {
     public function blockUser(Request $request){
         $user_id = $request->input('user_id');
         $blockUserModel = new BlockUser;
-        $blockPostBanned = new BlockPostBanned;
+        $UserPostBanned = new UserPostBanned;
         $model = new Posts;
         $user = JWTAuth::parseToken()->authenticate();
         switch($user->rank){
             case 0:
                 $user = JWTAuth::parseToken()->authenticate();
                 $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);
-                $query = $blockPostBanned->create(['mod_id' => $user->id,'banned_user_id' => $user_id]);
                 $query = $model->get();
                 $postCount = count($query);
                 return ['IsBlockUser' => true,'postCount' => $postCount];
@@ -192,6 +191,7 @@ class PostController extends Controller {
             case 2:
                 $user = JWTAuth::parseToken()->authenticate();
                 $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);
+                $query = $UserPostBanned->create(['mod_id' => $user->id,'banned_user_id' => $user_id]);
                 $query = $model->get();
                 $postCount = count($query);
                 return ['IsBlockUser' => true,'postCount' => $postCount];

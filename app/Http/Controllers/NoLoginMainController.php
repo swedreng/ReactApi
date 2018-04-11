@@ -113,7 +113,7 @@ class NoLoginMainController extends Controller {
                 'postCount' => $postCount,
                 'event' => $event ];
     }
-
+    
     public function viewProfile(Request $request){
         $postReq = $request->input('postReq');
         $person_id = $request->input('person_id');
