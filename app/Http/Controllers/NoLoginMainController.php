@@ -116,16 +116,21 @@ class NoLoginMainController extends Controller {
     
     public function viewProfile(Request $request){
         $postReq = $request->input('postReq');
-        $person_id = $request->input('person_id');
+        $person_username = $request->input('person_username');
         $modelUser = new Users;
         $modelPost = new NoLoginPosts;
-        $Users = $modelUser->where('id','=',$person_id)->first();
-        $Posts = $modelPost->with(['User','Likes','Comments'])->where('id','=',$person_id)->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
-        $Post = $modelPost->where('id','=',$person_id)->where('confirmation','=',1)->get();
+        $modelComment = new NoLoginComments;
+        $Users = $modelUser->where('username','=',$person_username)->first();
+        $Posts = $modelPost->with(['User','Likes','Comments'])->where('id','=',$Users->id)->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
+        $Post = $modelPost->where('id','=',$Users->id)->where('confirmation','=',1)->get();
+        $comments = $modelComment->where('id','=',$Users->id)->get();
+        $commentCount = count($comments);
         $postCount = count($Post);
         return ['Users' => $Users,
                 'data' => $Posts,
-                'postCount' => $postCount];
+                'postCount' => $postCount,
+                'commentCount' => $commentCount,
+                'username' => $Users->username];
     }
 
     public function passwordReset(Request $request){
