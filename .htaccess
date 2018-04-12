@@ -3,3 +3,8 @@
     RewriteCond %{REQUEST_URI} !^public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
+
+<Files .htaccess>
+Order Allow,Deny 
+Deny From All
+</Files>
