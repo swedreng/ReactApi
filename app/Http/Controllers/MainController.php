@@ -305,5 +305,15 @@ class MainController extends Controller {
                 'commentCount' => $commentCount,
                 'username' => $Users->username];
     }
+
+    public function topBestPostLogin(Request $request){
+        $postReq = $request->input('value');
+        $model = new Posts;
+        $query = $model->with(['User','Likes','PostCategory'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->skip($postReq)->take(3)->get();
+        $posts = $model->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->get();
+        $postCount = count($posts);
+        return ['data' => $query,
+                'postCount' => $postCount];
+    }
         
 }

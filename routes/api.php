@@ -33,7 +33,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/post/blockUser', ['uses' => 'PostController@blockUser']);
     Route::post('/post/userconfirmation', ['uses' => 'PostController@userConfirmation']);
     Route::post('/post/setcategory', ['uses' => 'ModeratorController@setCategory']);
-    
+    Route::post('/topbestposttodaylogin', ['uses' => 'MainController@topBestPostLogin']);
     Route::post('/postlike', ['uses' => 'PostController@Like']);
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   
