@@ -58,6 +58,8 @@ class PostController extends Controller {
         
         if($query->rank == 1){
             $result = $model->create(['id' => $user->id ,'writing'=> $writing, 'image' => $image ,'confirmation' => true ,'kind' => 'picture']);
+        }else if($query->rank == 2){
+            $result = $model->create(['id' => $user->id ,'writing'=> $writing, 'image' => $image ,'confirmation' => true ,'kind' => 'picture']);
         }else{
             $result = $model->create(['id' => $user->id ,'writing'=> $writing, 'image' => $image ,'kind' => 'picture']);
         }
@@ -84,6 +86,8 @@ class PostController extends Controller {
         $query = Users::where('id','=',$user->id)->first();
         
         if($query->rank == 1){
+            $result = $model->create(['id' => $user->id ,'writing'=> $write, 'kind' => 'write', 'confirmation' => true]);
+        }else if($query->rank == 2){
             $result = $model->create(['id' => $user->id ,'writing'=> $write, 'kind' => 'write', 'confirmation' => true]);
         }else{
             $result = $model->create(['id' => $user->id ,'writing'=> $write,'kind' => 'write']);
