@@ -245,6 +245,20 @@ class PostController extends Controller {
                     'message' => 'Size ait olmayan bir postu silmeye çalışıyorsunuz.'];
                 }
            break;
+           case 4:
+                $queryPost = $model->where('post_id','=',$post_id)->first();
+                if($query->id == $queryPost->id){
+                    $query = $model->findOrFail($post_id);
+                    $result = $query->delete();
+                    $posts = $model->get();
+                    $postCount = count($posts);
+                    return ['result' => $result,
+                    'postCount' => $postCount];
+                }else{
+                    return ['result' => false,
+                    'message' => 'Size ait olmayan bir postu silmeye çalışıyorsunuz.'];
+                }
+           break;
        }
      
     }
@@ -375,6 +389,12 @@ class PostController extends Controller {
                 return ['result' => true,
                         'likeCount' => $query->like];
         } 
+    }
+    public function getBestPostLogin(Request $request){
+        $model = new Posts;
+        $post_id = $request->input('post_id');
+        $query = $model->with(['User','Likes','PostCategory'])->where('post_id','=',$post_id)->get();
+        return $query;
     }
 
   

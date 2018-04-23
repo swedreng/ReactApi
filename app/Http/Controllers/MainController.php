@@ -32,7 +32,7 @@ class MainController extends Controller {
         $totalPost = $model->get();
         $postCount = count($totalPost) - count($blockPost);
         $query = Users::where('id','=',$user->id)->first();
-        if($query->rank == 0){
+        if($query->rank == 0 || $query->rank == 4){
             if(!is_null($filter)){
 
                 $query = $model
@@ -46,7 +46,7 @@ class MainController extends Controller {
                     $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
                 })
                 ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL')->select('posts.*')
-                ->where('post_category.category_id', '=',$filter)
+                ->where([['post_category.category_id', '=',$filter],['confirmation','=',1]])
                 ->where('confirmation','=',1)
                 ->with(['User','Likes','PostCategory'])
                 ->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
@@ -103,7 +103,7 @@ class MainController extends Controller {
                     $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
                 })
                 ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL ')->select('posts.*')
-                ->where('post_category.category_id', '=',$filter)
+                ->where([['post_category.category_id', '=',$filter],['confirmation','=',1]])
                 //->orWhere('id','=',$user->id)
                 ->with(['User','Likes','PostCategory'])
                 ->orderByRaw('post_id DESC')
@@ -160,7 +160,7 @@ class MainController extends Controller {
                     $join->on('posts.id','=','block_user.block_user_id')->where('block_user.user_id','=',$user->id);
                 })
                 ->whereRaw('block_post.user_id IS NULL AND block_user.user_id IS NULL ')->select('posts.*')
-                ->where('post_category.category_id', '=',$filter)
+                ->where([['post_category.category_id', '=',$filter],['confirmation','=',1]])
                 //->orWhere('id','=',$user->id)
                 ->with(['User','Likes','PostCategory'])
                 ->orderByRaw('post_id DESC')

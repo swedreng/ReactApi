@@ -29,7 +29,7 @@ class NoLoginMainController extends Controller {
             })
             ->select('posts.*')
             ->where([['post_category.category_id', '=',$filter],['confirmation','=',1]])
-            ->with(['User','Likes'])
+            ->with(['User','Likes','PostCategory'])
             ->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
 
             $Count = $model
