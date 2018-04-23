@@ -31,7 +31,8 @@ class Posts extends Model {
 		parent::boot();
 	
 		static::deleting(function($post) { 
-			$post->Comments()->delete();
+      $post->Comments()->delete();
+      $post->PostCategory()->delete();
 		});
     }
 
