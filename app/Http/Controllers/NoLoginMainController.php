@@ -102,16 +102,25 @@ class NoLoginMainController extends Controller {
         $postReq = $request->input('postReq');
         $event = $request->input('event');
         $modelPost = new NoLoginPosts;
-        $modelUser = new Users;
         $search = $request->input('search');
-        $Users = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->get();
         $Posts = $modelPost->with(['User','Likes','Comments'])->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         $Post = $modelPost->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->get();
         $postCount = count($Post);
-        return ['Users' => $Users,
-                'data' => $Posts,
+        return ['data' => $Posts,
                 'postCount' => $postCount,
                 'event' => $event ];
+    }
+    public function searchPerson(Request $request){
+        $postReq = $request->input('postReq');
+        $event = $request->input('event');
+        $modelUser = new Users; 
+        $search = $request->input('search');
+        $Users = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->skip($postReq)->take(3)->get();
+        $user = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->get();
+        $userCount = count($user);
+        return [
+            'Users' => $Users,
+            'userCount' => $userCount];
     }
     
     public function viewProfile(Request $request){
@@ -150,7 +159,7 @@ class NoLoginMainController extends Controller {
                 $result = $passwordResetModel->create(['user_id' => $query->id, 'token' => $token, 'email' => $query->email]);
                 Mail::send('emails.send', ['title' => $title, 'content' => $content,'token' => $token] , function ($message)
                 {
-                    $message->from('info@opanc.com','Opac Şifre Sıfırlama');
+                    $message->from('swedreng5@gmail.com','Opanc.com Şifre Sıfırlama');
                     $message->to('anil.gurler.94@gmail.com');
         
                 });

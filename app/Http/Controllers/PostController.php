@@ -154,6 +154,13 @@ class PostController extends Controller {
                 $postCount = count($query);
                 return ['IsBlockPost' => true, 'postCount' => $postCount];
             break;
+            case 4:
+            $user = JWTAuth::parseToken()->authenticate();
+            $query = $blockPostModel->create(['user_id'=>$user->id,'post_id'=>$post_id]);
+            $query = $model->get();
+            $postCount = count($query);
+            return ['IsBlockPost' => true, 'postCount' => $postCount];
+        break;
             case 2:
                 $user = JWTAuth::parseToken()->authenticate();
                 $query = $blockPostModel->create(['user_id'=>$user->id,'post_id'=>$post_id]);
@@ -192,6 +199,13 @@ class PostController extends Controller {
                 $postCount = count($query);
                 return ['IsBlockUser' => true,'postCount' => $postCount];
             break;
+            case 4:
+            $user = JWTAuth::parseToken()->authenticate();
+            $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);
+            $query = $model->get();
+            $postCount = count($query);
+            return ['IsBlockUser' => true,'postCount' => $postCount];
+        break;
             case 2:
                 $user = JWTAuth::parseToken()->authenticate();
                 $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);

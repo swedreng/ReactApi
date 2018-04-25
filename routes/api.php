@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
     Route::post('/outgetcomment', ['uses' => 'NoLoginMainController@getComments']);
     Route::post('/contact', ['uses' => 'NoLoginMainController@contact']);
     Route::post('/nologinsearch',['uses' => 'NoLoginMainController@Search']);
+    Route::post('/searchperson',['uses' => 'NoLoginMainController@searchPerson']);
     Route::post('/viewprofile',['uses' => 'NoLoginMainController@viewProfile']);
     Route::post('/passwordreset',['uses' => 'NoLoginMainController@passwordReset']);
     Route::post('/passwordupdate',['uses' => 'NoLoginMainController@passwordUpdate']);
@@ -27,6 +28,7 @@ Route::group(['middleware' => ['web']], function () {
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/loginviewprofile',['uses' => 'MainController@LoginviewProfile']);
     Route::post('/loginsearch',['uses' => 'MainController@search']);
+    Route::post('/loginsearchperson',['uses' => 'MainController@loginSearchPerson']);
     Route::post('/posts', ['uses' => 'MainController@index']);
     Route::post('/post/confirmation', ['uses' => 'PostController@postConfirmation']);
     Route::post('/post/blockPost', ['uses' => 'PostController@blockPost']);

@@ -275,16 +275,25 @@ class MainController extends Controller {
         $postReq = $request->input('postReq');
         $event = $request->input('event');
         $modelPost = new Posts;
-        $modelUser = new Users; 
         $search = $request->input('search');
-        $Users = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->get();
         $Posts = $modelPost->with(['User','Likes','Comments'])->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->skip($postReq)->take(3)->get();
         $Post = $modelPost->where('writing' , 'LIKE', '%'.$search.'%')->where('confirmation','=',1)->orderByRaw('post_id DESC')->get();
         $postCount = count($Post);
-        return ['Users' => $Users,
-                'data' => $Posts,
+        return ['data' => $Posts,
                 'postCount' => $postCount,
                 'event' => $event ];
+    }
+    public function loginSearchPerson(Request $request){
+        $postReq = $request->input('postReq');
+        $event = $request->input('event');
+        $modelUser = new Users; 
+        $search = $request->input('search');
+        $Users = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->skip($postReq)->take(3)->get();
+        $user = $modelUser->where('firstname', 'LIKE', '%'.$search.'%')->get();
+        $userCount = count($user);
+        return [
+            'Users' => $Users,
+            'userCount' => $userCount];
     }
     
     public function LoginviewProfile(Request $request){

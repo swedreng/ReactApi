@@ -7,6 +7,7 @@ use App\Models\Like;
 use App\Models\Comments;
 use App\Models\ModConfirmation;
 use App\Models\PostCategory;
+use App\Models\BlockPost;
 use Carbon\Carbon;
 
 class Posts extends Model {
@@ -33,6 +34,9 @@ class Posts extends Model {
 		static::deleting(function($post) { 
       $post->Comments()->delete();
       $post->PostCategory()->delete();
+      $post->Likes()->delete();
+      $post->BlockPosts()->delete();
+
 		});
     }
 
@@ -48,6 +52,10 @@ class Posts extends Model {
     public function Likes() {
       return $this->hasMany('App\Models\Like', 'post_id' , 'post_id');
     }
+    public function BlockPosts() {
+      return $this->hasMany('App\Models\BlockPost', 'post_id' , 'post_id');
+    }
+
     public function getImageAttribute($image){
       return env('APP_URL').$image;
     }
