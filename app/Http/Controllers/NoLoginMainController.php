@@ -144,7 +144,8 @@ class NoLoginMainController extends Controller {
 
     public function passwordReset(Request $request){
         $title = 'Şifre Sıfırla';
-        $content = 'Meraba kullanıcı';
+        $content = 'Merhaba kullanıcı bu mesaj Opanc.com tarafından size gönderilen şifre güncelleme mesajıdır.';
+        $subject = 'Opanc.com Şifre Sıfırlama';
         $email = $request->input('email');
         $userModel = new Users;
         $passwordResetModel = new PasswordReset;
@@ -157,10 +158,10 @@ class NoLoginMainController extends Controller {
             }else{
                 $token = str_random(60);
                 $result = $passwordResetModel->create(['user_id' => $query->id, 'token' => $token, 'email' => $query->email]);
-                Mail::send('emails.send', ['title' => $title, 'content' => $content,'token' => $token] , function ($message)
+                Mail::send('emails.send', ['title' => $title, 'content' => $content, 'token' => $token] , function ($message) use ($email)
                 {
-                    $message->from('swedreng5@gmail.com','Opanc.com Şifre Sıfırlama');
-                    $message->to('anil.gurler.94@gmail.com');
+                    $message->from('opanc.info@gmail.com','Opanc.com');
+                    $message->to($email)->subject('Şifre Sıfırlama');     
         
                 });
               
