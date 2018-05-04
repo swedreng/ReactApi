@@ -180,8 +180,8 @@ class NoLoginMainController extends Controller {
         $passwordResetModel = new PasswordReset;
         $userModel = new Users;
         $query = $passwordResetModel->where('token','=',$token)->first();
-
-        if($query){
+        
+        if(!is_null($query)){
             
             $result = $userModel->where('id','=',$query->user_id)->first();
             $result->password = $newPassword;
