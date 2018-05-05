@@ -9,9 +9,11 @@ use App\Models\Comments;
 use App\Models\Contact;
 use App\Models\PasswordReset;
 use App\Models\PostCategory;
+use App\Models\Rememberme;
 use App\Http\Controllers\Controller; 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Mail;
 
 
@@ -218,5 +220,44 @@ class NoLoginMainController extends Controller {
         $postCount = count($posts);
         return ['data' => $query,
                 'postCount' => $postCount];
+    }
+    public function rememberMe(Request $request){
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $model = new Rememberme;
+        $token = str_random(60);
+        $query = $model->create(['username'=>$username,'password'=>$password,'rememberme_token' =>$token]);
+        $id = $query->rememberme_id;
+        $data = $model->findOrFail($id);
+        return ['success' => true,
+                'token' => $token,
+                'data' => $data];
+
+    }
+    public function getRememberMe(Request $request){
+        $token = $request->input('token');
+        $model = new Rememberme;
+        if($token){
+            $query = $model->where('rememberme_token', '=' , $token)->first();
+            if(!is_null($query)){
+                return ['data' => $query,
+                        'success' => true];
+            }else{
+                return ['success' => false];
+            }
+        }else{
+            return ['success' => false];
+        }
+      
+        
+    }
+    public function forgetMe(Request $request){
+        $token = $request->input('token');
+        $model = new RememberMe;
+        $query = $model->where('rememberme_token','=',$token)->first();
+        $query = $model->findOrFail($query->rememberme_id);
+        $result = $query->delete();
+        return ['success' => true,
+                'data' => null];
     }
 }
