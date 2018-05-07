@@ -7,6 +7,7 @@ use App\Models\Posts;
 use App\Models\Comments;
 use App\Models\UserInfo;
 use App\Models\PostCategory;
+use App\Models\BlockUser;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -234,6 +235,43 @@ class UserController extends Controller {
         $commentCount = count($queryComment);
         return ['commentCount' => $commentCount,
                 'postCount' => $postCount];
+    }
+    public function blocUsers(Request $request){
+        $postReq = $request->input('postReq');
+        $value = $request->input('value');
+        $blockUserModel = new BlockUser;
+        $userModel = new Users;
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $query = $userModel
+        ->leftJoin('block_user', function ($join) use ($user){
+            $join->on('users.id', '=' ,'block_user.block_user_id');
+        })->where('block_user.user_id','=',$user->id)->select('users.*')->skip($postReq)->take(3)->get();
+
+        $userCount = $userModel
+        ->leftJoin('block_user', function ($join) use ($user){
+            $join->on('users.id', '=' ,'block_user.block_user_id');
+        })->where('block_user.user_id','=',$user->id)->select('users.*')->get();
+        $count = count($userCount);
+        return ['banned_persons' => $query,
+                'user_count' => $count ];
+        
+    }
+    public function notBlockUser(Request $request){
+        $person_id = $request->input('person_id');
+        $blockUserModel = new BlockUser;
+        $userModel = new Users;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $blockUserModel->where([['user_id','=',$user->id],['block_user_id','=',$person_id]])->first();
+        $query = $blockUserModel->findOrFail($query->block_id);
+        $result = $query->delete();
+        $userCount = $userModel
+        ->leftJoin('block_user', function ($join) use ($user){
+            $join->on('users.id', '=' ,'block_user.block_user_id');
+        })->where('block_user.user_id','=',$user->id)->select('users.*')->get();
+        $Count = count($userCount);
+        return ['success' => true,
+                'user_count' => $Count];
     }
 
 }
