@@ -202,7 +202,7 @@ class NoLoginMainController extends Controller {
 
     public function bestPostToday(Request $request){
         $model = new NoLoginPosts;
-        $query = $model->with(['User','Likes','PostCategory'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->get()->take(5);
+        $query = $model->with(['User','Likes','PostCategory'])->whereRaw('date(posts.created_at) = date(now())')->where('confirmation','=',1)->orderBy('like', 'DESC')->get()->take(10);
         return $query;
     }
 
