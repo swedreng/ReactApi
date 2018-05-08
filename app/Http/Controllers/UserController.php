@@ -8,6 +8,7 @@ use App\Models\Comments;
 use App\Models\UserInfo;
 use App\Models\PostCategory;
 use App\Models\BlockUser;
+use App\Models\UserPostBanned;
 use App\Http\Controllers\Controller; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
@@ -273,5 +274,14 @@ class UserController extends Controller {
         return ['success' => true,
                 'user_count' => $Count];
     }
-
+    public function isBlockPost(Request $request){
+        $model = new UserPostBanned;
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = $model->where('banned_user_id','=',$user->id)->first();
+        if(!is_null($query)){
+            return ['status' => true];
+        }else{
+            return ['status' => false];
+        }
+    }
 }

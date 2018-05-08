@@ -53,6 +53,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::put('/user', ['uses' => 'UserController@userInfoupdate']);
     Route::put('/user/emailupdate', ['uses' => 'UserController@userEmailUpdate']);
     Route::get('/user/blockusers', ['uses' => 'UserController@blocUsers']);
+    Route::get('/user/isblockpost', ['uses' => 'UserController@isBlockPost']);
     Route::post('/user/notblockuser', ['uses' => 'UserController@notBlockUser']);
     Route::put('/user/usernameupdate', ['uses' => 'UserController@UsernameUpdate']);
     Route::put('/user/passwordupdate', ['uses' => 'UserController@passwordUpdate']); 

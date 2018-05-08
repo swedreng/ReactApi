@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Response;
 use App\Http\Requests\FileUploadPostRequest; 
+use App\Http\Requests\UserPostShareRequest; 
 use Google\Cloud\Vision\VisionClient;
 
 class PostController extends Controller {
@@ -79,7 +80,7 @@ class PostController extends Controller {
         }
     }
     
-    public function createwp(Request $request){
+    public function createwp(UserPostShareRequest $request){
         $model = new Posts;
         $write = $request->input('write');
         $user = JWTAuth::parseToken()->authenticate();
@@ -100,10 +101,10 @@ class PostController extends Controller {
             $query2 = $modelConf->create(['post_id' => $query->post_id,'confirmation_count' => 0]);
             if($query && $query2){
                 return ['message' => 'Profilinizde paylaşıldı.',
-                'success' => true];
+                        'success' => true];
             }else{
                 return ['message' => 'Bir problem oluştu lütfen bize bildirin.',
-                'success' => false];
+                        'success' => false];
             }
             
         }
@@ -214,7 +215,14 @@ class PostController extends Controller {
                 $postCount = count($query);
                 return ['IsBlockUser' => true,'postCount' => $postCount];
             break; 
-        }
+            case 1:
+                $user = JWTAuth::parseToken()->authenticate();
+                $query = $blockUserModel->create(['user_id'=>$user->id,'block_user_id'=>$user_id]);
+                $query = $UserPostBanned->create(['mod_id' => $user->id,'banned_user_id' => $user_id]);
+                $query = $model->get();
+                $postCount = count($query);
+                return ['IsBlockUser' => true,'postCount' => $postCount];
+        }   
 
     }
     public function delete(Request $request){ // düzenlenicek
