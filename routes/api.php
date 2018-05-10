@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 // Tokensiz requestler
     //posts
     Route::post('/login', ['uses' => 'MainController@login']); //+
+    Route::get('/full', 'NoLoginMainController@allPosts');
     Route::post('/rememberme', ['uses' => 'NoLoginMainController@rememberMe']); //+
     Route::post('/forgetme', ['uses' => 'NoLoginMainController@forgetMe']); //+
     Route::post('/getrememberme', ['uses' => 'NoLoginMainController@getRememberMe']); //+

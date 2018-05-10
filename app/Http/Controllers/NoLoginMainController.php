@@ -260,4 +260,11 @@ class NoLoginMainController extends Controller {
         return ['success' => true,
                 'data' => null];
     }
+
+    public function allPosts(Request $request){
+        $page = $request->input('page');
+        $model = new NoLoginPosts;
+        $query = $model->with(['User'])->where('confirmation','=',1)->orderBy('post_id','desc')->take(300)->get();
+        return ['data' => $query];
+    }
 }
