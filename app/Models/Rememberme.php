@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Rememberme extends Model {
     protected $table = 'rememberme';
     protected $primaryKey = 'rememberme_id';
-    protected $fillable = ['username','password','rememberme_token'];
+    protected $fillable = ['username','rememberme_token'];
     protected $hidden = [];
 
 

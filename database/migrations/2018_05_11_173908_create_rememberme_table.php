@@ -16,7 +16,6 @@ class CreateRemembermeTable extends Migration
         Schema::create('rememberme', function (Blueprint $table) {
             $table->increments('rememberme_id');
             $table->string('username');
-            $table->string('password');
             $table->string('rememberme_token');
 			$table->timestamp('created_at')->useCurrent();
 			$table->timestamp('updated_at')->nullable();

@@ -223,15 +223,21 @@ class NoLoginMainController extends Controller {
     }
     public function rememberMe(Request $request){
         $username = $request->input('username');
-        $password = $request->input('password');
         $model = new Rememberme;
-        $token = str_random(60);
-        $query = $model->create(['username'=>$username,'password'=>$password,'rememberme_token' =>$token]);
-        $id = $query->rememberme_id;
-        $data = $model->findOrFail($id);
-        return ['success' => true,
-                'token' => $token,
-                'data' => $data];
+        $query = $model->where('username','=',$username)->first();
+        if($query){
+            return ['success' => false];
+        }else{
+
+            $token = str_random(60);
+            $query = $model->create(['username'=>$username,'rememberme_token' =>$token]);
+            $id = $query->rememberme_id;
+            $data = $model->findOrFail($id);
+            return ['success' => true,
+                    'token' => $token,
+                    'data' => $data];
+        }
+        
 
     }
     public function getRememberMe(Request $request){

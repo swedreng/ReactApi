@@ -42,7 +42,7 @@ class ModeratorController extends Controller {
     }
     public function getCategory(Request $request){
         $model = new Category;
-        $query = $model->get();
+        $query = $model->orderBy('category_id','asc')->get();
         return $query;
     }
 }

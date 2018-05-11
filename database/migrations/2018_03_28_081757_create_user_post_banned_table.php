@@ -17,7 +17,6 @@ class CreateUserPostBannedTable extends Migration
             $table->increments('user_post_banned_id');
             $table->integer('mod_id');
             $table->integer('banned_user_id');
-            $table->softDeletes();
             $table->timestamp('created_at')->useCurrent();
 			$table->timestamp('updated_at')->nullable();
         });
