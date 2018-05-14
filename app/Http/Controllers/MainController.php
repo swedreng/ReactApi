@@ -183,9 +183,6 @@ class MainController extends Controller {
                 $postCount = count($userPostCount);
             }else{
                 $query = $model
-                ->leftJoin('post_category', function ($join) use ($filter){
-                    $join->on('posts.post_id', '=' ,'post_category.post_id');
-                })
                 ->leftJoin('block_post', function ($join) use ($user){
                     $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
                 })
@@ -197,9 +194,6 @@ class MainController extends Controller {
                 ->skip($postReq)->take(3)->get();
 
                 $allPostCount = $model
-                ->leftJoin('post_category', function ($join) use ($filter){
-                    $join->on('posts.post_id', '=' ,'post_category.post_id');
-                })
                 ->leftJoin('block_post', function ($join) use ($user){
                     $join->on('posts.post_id', '=', 'block_post.post_id')->where('block_post.user_id','=',$user->id);
                 })
