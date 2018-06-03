@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
     Route::post('/passwordreset',['uses' => 'NoLoginMainController@passwordReset']);
     Route::post('/passwordupdate',['uses' => 'NoLoginMainController@passwordUpdate']);
     Route::post('/post/getcategory', ['uses' => 'ModeratorController@getCategory']);
+    Route::post('/getcontent', ['uses' => 'NoLoginMainController@getContent']);
+    Route::post('/getcontentdetail', ['uses' => 'NoLoginMainController@getContentDetail']);
     Route::get('/bestposttoday', ['uses' => 'NoLoginMainController@bestPostToday']);
     Route::post('/getbestpost', ['uses' => 'NoLoginMainController@bestPost']);
     Route::post('/topbestposttoday', ['uses' => 'NoLoginMainController@topBestPost']);
@@ -41,7 +43,7 @@ Route::group(['middleware' => ['jwt.auth']], function () {
     Route::post('/post/setcategory', ['uses' => 'ModeratorController@setCategory']);
     Route::post('/topbestposttodaylogin', ['uses' => 'MainController@topBestPostLogin']);
     Route::post('/logingetbestpost', ['uses' => 'PostController@getBestPostLogin']);
-    
+    Route::post('/createcontent', ['uses' => 'PostController@createContent']);
     Route::post('/postlike', ['uses' => 'PostController@Like']);
     //gets
     Route::delete('/users/{id}', ['uses' => 'AdminController@delete']); // +   

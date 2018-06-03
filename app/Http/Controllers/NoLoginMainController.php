@@ -5,6 +5,7 @@ use App\Models\NoLoginPosts;
 use App\Models\NoLoginComments;
 use App\Models\Posts;
 use App\Models\Users;
+use App\Models\Content;
 use App\Models\Comments;
 use App\Models\Contact;
 use App\Models\PasswordReset;
@@ -272,5 +273,22 @@ class NoLoginMainController extends Controller {
         $model = new NoLoginPosts;
         $query = $model->with(['User'])->where('confirmation','=',1)->orderBy('post_id','desc')->take(300)->get();
         return ['data' => $query];
+    }
+    public function getContent(Request $request){
+        $event = $request->input('event');
+        $value = $request->input('value');
+        $model = new Content;
+        $query = $model->orderBy('contents_id','desc')->skip($value)->take(3)->get();
+        $count = $model->get();
+        $contentCount = count($count);
+        return  ['data' =>$query,
+                'contentCount' => $contentCount,
+                'event' => $event];
+    }
+    public function getContentDetail(Request $request){
+        $content_id = $request->input('content_id');
+        $model = new Content;
+        $query = $model->where('contents_id','=',$content_id)->get();
+        return $query;
     }
 }
