@@ -498,7 +498,7 @@ class PostController extends Controller {
         }
         if(!is_null($files10)){
             Storage::disk('public')->put($files10->getClientOriginalName(), File::get($files10));
-            $image5 = Storage::url($files10->getClientOriginalName());
+            $image10 = Storage::url($files10->getClientOriginalName());
         }else{
             $image10 = 'Doldurulmamıs';
         }
