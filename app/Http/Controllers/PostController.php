@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Response;
 use App\Http\Requests\FileUploadPostRequest; 
 use App\Http\Requests\UserPostShareRequest; 
+use App\Http\Requests\UserPostLinkShareRequest; 
 use Google\Cloud\Vision\VisionClient;
 
 class PostController extends Controller {
@@ -93,6 +94,37 @@ class PostController extends Controller {
             $result = $model->create(['id' => $user->id ,'writing'=> $write, 'kind' => 'write', 'confirmation' => true]);
         }else{
             $result = $model->create(['id' => $user->id ,'writing'=> $write,'kind' => 'write']);
+        }
+        
+        if($result){
+            $query = $model->orderBy('post_id','desc')->take(1)->first();
+            $modelConf = new PostConfirmation;
+            $query = ModBlockPost::create(['post_id' => $query->post_id, 'block_count' => 0]);
+            $query2 = $modelConf->create(['post_id' => $query->post_id,'confirmation_count' => 0]);
+            if($query && $query2){
+                return ['message' => 'Profilinizde paylaşıldı.',
+                        'success' => true];
+            }else{
+                return ['message' => 'Bir problem oluştu lütfen bize bildirin.',
+                        'success' => false];
+            }
+            
+        }
+    }
+
+    public function createlink(UserPostLinkShareRequest $request){
+        $model = new Posts;
+        $write = $request->input('write');
+        $link = $request->input('link');
+        $user = JWTAuth::parseToken()->authenticate();
+        $query = Users::where('id','=',$user->id)->first();
+        
+        if($query->rank == 1){
+            $result = $model->create(['id' => $user->id ,'writing'=> $write, 'link' =>  $link, 'kind' => 'link', 'confirmation' => true]);
+        }else if($query->rank == 2){
+            $result = $model->create(['id' => $user->id ,'writing'=> $write, 'link' =>  $link, 'kind' => 'link', 'confirmation' => true]);
+        }else{
+            $result = $model->create(['id' => $user->id ,'writing'=> $write, 'link' =>  $link, 'kind' => 'link']);
         }
         
         if($result){

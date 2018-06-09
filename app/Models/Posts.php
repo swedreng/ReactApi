@@ -15,7 +15,7 @@ class Posts extends Model {
     protected $softDelete = true;
     protected $table = 'posts';
     protected $primaryKey = 'post_id';
-    protected $fillable = ['id','writing','image','kind','created_at','confirmation'];
+    protected $fillable = ['id','writing','image','kind','link','created_at','confirmation'];
     protected $hidden = [];
     protected $appends = [
         'IslikedPost', 

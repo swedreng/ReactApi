@@ -18,6 +18,7 @@ class CreatePostsTable extends Migration
             $table->integer('id')->unsigned();
             $table->string('writing',400);
             $table->string('image')->nullable();
+            $table->string('link')->nullable();
             $table->string('kind');
             $table->integer('like')->default(0);
             $table->boolean('confirmation')->default(false);

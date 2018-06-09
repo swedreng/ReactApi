@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-class UserPostShareRequest extends FormRequest
+class UserPostLinkShareRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +26,13 @@ class UserPostShareRequest extends FormRequest
     {
         return [
             'write' => 'max:400',
-            'link' => 'required'
+            'link' => 'required',
         ];
     }
     public function messages(){
         return [      
             'write.max' => 'En fazla 400 karakterlik gönderi paylaşabilirsizz.',
-            'link.required' => 'Gönderdiğiniz paylaşımda link olması gerekmekte.'
+            'link.required' => 'Bağlantı alanı eklenmeli!'
         ];
     }
     //Default errorları devre dısı bırakıp kendı errorlarımızı bastırıyoruz.
