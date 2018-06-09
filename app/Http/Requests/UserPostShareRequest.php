@@ -25,12 +25,14 @@ class UserPostShareRequest extends FormRequest
     public function rules()
     {
         return [
-            'write' => 'max:400'
+            'write' => 'max:400',
+            'link' => 'required'
         ];
     }
     public function messages(){
         return [      
             'write.max' => 'En fazla 400 karakterlik gönderi paylaşabilirsizz.',
+            'link.required' => 'Gönderdiğiniz paylaşımda link olması gerekmekte.'
         ];
     }
     //Default errorları devre dısı bırakıp kendı errorlarımızı bastırıyoruz.
