@@ -83,7 +83,7 @@ class PostController extends Controller {
         }
     }
     
-    public function createwp(UserPostShareRequest $request){
+    public function createwp(Request $request){
         $model = new Posts;
         $write = $request->input('write');
         $user = JWTAuth::parseToken()->authenticate();
