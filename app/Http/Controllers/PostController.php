@@ -19,6 +19,7 @@ use Illuminate\Http\Response;
 use App\Http\Requests\FileUploadPostRequest; 
 use App\Http\Requests\UserPostShareRequest; 
 use App\Http\Requests\UserPostLinkShareRequest; 
+use App\Http\Requests\UserPostShareYoutubeRequest; 
 use Google\Cloud\Vision\VisionClient;
 
 class PostController extends Controller {
@@ -141,6 +142,37 @@ class PostController extends Controller {
             }
             
         }
+    }
+    public function createYoutubeLink(UserPostShareYoutubeRequest $request){
+        $model = new Posts;
+        $link = $request->input('link');
+        $write = $request->input('write');
+        $linkExplode = explode ("=",$link);
+        $user = JWTAuth::parseToken()->authenticate();
+
+        if($user->rank == 1){
+            $result = $model->create(['id' => $user->id ,'writing'=> $write, 'youtube_link' =>  $linkExplode[1], 'kind' => 'youtube_link', 'confirmation' => true]);
+        }else if($query->rank == 2){
+            $result = $model->create(['id' => $user->id ,'writing'=> $write, 'youtube_link' =>  $linkExplode[1], 'kind' => 'youtube_link', 'confirmation' => true]);
+        }else{
+            $result = $model->create(['id' => $user->id ,'writing'=> $write, 'youtube_link' =>  $linkExplode[1], 'kind' => 'youtube_link']);
+        }
+        
+        if($result){
+            $query = $model->orderBy('post_id','desc')->take(1)->first();
+            $modelConf = new PostConfirmation;
+            $query = ModBlockPost::create(['post_id' => $query->post_id, 'block_count' => 0]);
+            $query2 = $modelConf->create(['post_id' => $query->post_id,'confirmation_count' => 0]);
+            if($query && $query2){
+                return ['message' => 'Profilinizde paylaşıldı.',
+                        'success' => true];
+            }else{
+                return ['message' => 'Bir problem oluştu lütfen bize bildirin.',
+                        'success' => false];
+            }
+            
+        }
+        
     }
 
     private function deletePost($post_id,$block_count){
