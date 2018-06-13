@@ -152,7 +152,7 @@ class PostController extends Controller {
 
         if($user->rank == 1){
             $result = $model->create(['id' => $user->id ,'writing'=> $write, 'youtube_link' =>  $linkExplode[1], 'kind' => 'youtube_link', 'confirmation' => true]);
-        }else if($query->rank == 2){
+        }else if($user->rank == 2){
             $result = $model->create(['id' => $user->id ,'writing'=> $write, 'youtube_link' =>  $linkExplode[1], 'kind' => 'youtube_link', 'confirmation' => true]);
         }else{
             $result = $model->create(['id' => $user->id ,'writing'=> $write, 'youtube_link' =>  $linkExplode[1], 'kind' => 'youtube_link']);
