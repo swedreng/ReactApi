@@ -288,7 +288,7 @@ class NoLoginMainController extends Controller {
     public function getContentDetail(Request $request){
         $content_id = $request->input('content_id');
         $model = new Content;
-        $query = $model->where('contents_id','=',$content_id)->get();
+        $query = $model->where('contents_id','=',$content_id)->orWhere('slug', '=', $content_id)->get();
         return $query;
     }
 }

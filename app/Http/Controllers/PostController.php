@@ -566,6 +566,10 @@ class PostController extends Controller {
         }else{
             $image10 = 'Doldurulmamıs';
         }
+
+        if(!is_null($title)){
+            $slug = str_slug($title, '-');
+        }
         
         if($query->rank == 1){
             $result = $model->create(['user_id' => $user->id ,'title'=> $title,
@@ -578,7 +582,9 @@ class PostController extends Controller {
              'image7' => $image7, 'writing7' => $writing7,
              'image8' => $image8, 'writing8' => $writing8,
              'image9' => $image9, 'writing9' => $writing9,
-             'image10' => $image10, 'writing10' => $writing10]);
+             'image10' => $image10, 'writing10' => $writing10,
+             'slug' => $slug
+             ]);
              if($result){
                  return ['result' => true];
              }else{
