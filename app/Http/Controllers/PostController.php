@@ -9,6 +9,7 @@ use App\Models\BlockPost;
 use App\Models\BlockUser;
 use App\Models\ModBlockPost;
 use App\Models\Content;
+use App\Models\ContentImage;
 use App\Models\UserPostBanned;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -494,114 +495,52 @@ class PostController extends Controller {
     }
     public function createContent(Request $request){
         $model = new Content;
-        $title = $request->input('title');
-        $files1 = $request->file('files1');
-        $files2 = $request->file('files2');
-        $files3 = $request->file('files3');
-        $files4 = $request->file('files4');
-        $files5 = $request->file('files5');
-        $files6 = $request->file('files6');
-        $files7 = $request->file('files7');
-        $files8 = $request->file('files8');
-        $files9 = $request->file('files9');
-        $files10 = $request->file('files10');
-        $writing1 = $request->input('writing1');
-        $writing2 = $request->input('writing2');
-        $writing3 = $request->input('writing3');
-        $writing4 = $request->input('writing4');
-        $writing5 = $request->input('writing5');
-        $writing6 = $request->input('writing6');
-        $writing7 = $request->input('writing7');
-        $writing8 = $request->input('writing8');
-        $writing9 = $request->input('writing9');
-        $writing10 = $request->input('writing10');
+        $files = $_FILES;
+        $desc = $request->input('desc');
         $user = JWTAuth::parseToken()->authenticate();    
         $query = Users::where('id','=',$user->id)->first(); 
-        if(!is_null($files1)){
-            Storage::disk('public')->put($files1->getClientOriginalName(), File::get($files1));
-            $image1 = Storage::url($files1->getClientOriginalName());
-        }
-        if(!is_null($files2)){
-            Storage::disk('public')->put($files2->getClientOriginalName(), File::get($files2));
-            $image2 = Storage::url($files2->getClientOriginalName());
-        }else {
-            $image2 = 'Doldurulmamıs';
-        }
-        if(!is_null($files3)){
-            Storage::disk('public')->put($files3->getClientOriginalName(), File::get($files3));
-            $image3 = Storage::url($files3->getClientOriginalName());
-        }else{
-            $image3 = 'Doldurulmamıs';
-        }
-        if(!is_null($files4)){
-            Storage::disk('public')->put($files4->getClientOriginalName(), File::get($files4));
-            $image4 = Storage::url($files4->getClientOriginalName());
-        }else{
-            $image4 = 'Doldurulmamıs';
-        }
-        if(!is_null($files5)){
-            Storage::disk('public')->put($files5->getClientOriginalName(), File::get($files5));
-            $image5 = Storage::url($files5->getClientOriginalName());
-        }else{
-            $image5 = 'Doldurulmamıs';
-        }
-        if(!is_null($files6)){
-            Storage::disk('public')->put($files6->getClientOriginalName(), File::get($files6));
-            $image6 = Storage::url($files6->getClientOriginalName());
-        }else{
-            $image6 = 'Doldurulmamıs';
-        }
-        if(!is_null($files7)){
-            Storage::disk('public')->put($files7->getClientOriginalName(), File::get($files7));
-            $image7 = Storage::url($files7->getClientOriginalName());
-        }else{
-            $image7 = 'Doldurulmamıs';
-        }
-        if(!is_null($files8)){
-            Storage::disk('public')->put($files8->getClientOriginalName(), File::get($files8));
-            $image8 = Storage::url($files8->getClientOriginalName());
-        }else{
-            $image8 = 'Doldurulmamıs';
-        }
-        if(!is_null($files9)){  
-            Storage::disk('public')->put($files9->getClientOriginalName(), File::get($files9));
-            $image9 = Storage::url($files9->getClientOriginalName());
-        }else{
-            $image9 = 'Doldurulmamıs';
-        }
-        if(!is_null($files10)){
-            Storage::disk('public')->put($files10->getClientOriginalName(), File::get($files10));
-            $image10 = Storage::url($files10->getClientOriginalName());
-        }else{
-            $image10 = 'Doldurulmamıs';
-        }
+
+        $title = $request->input('title');
 
         if(!is_null($title)){
             $slug = str_slug($title, '-');
+        } else {
+            $slug = null;
+        }
+        
+
+        $result = $model->create([
+            'user_id' => $user->id,
+            'title' => $title,
+            'slug' => $slug
+        ]);
+
+        if(!is_null($result)){
+            $content_id = $result->contents_id;
+            $content_image = new ContentImage();
+
+            foreach ($files['files']['name'] as $key => $name){
+                Storage::disk('public')->put($name, File::get($files['files']['tmp_name'][$key]));
+                $image = Storage::url($name);
+                $content_image->create([
+                    'image' => $image,
+                    'contents_id' => $content_id,
+                    'desc' => $desc[$key]
+                ]);
+
+            }
+
+            
+
         }
         
         if($query->rank == 1){
-            $result = $model->create(['user_id' => $user->id ,'title'=> $title,
-             'image1' => $image1 ,'writing1' => $writing1,
-             'image2' => $image2, 'writing2' => $writing2,
-             'image3' => $image3, 'writing3' => $writing3,
-             'image4' => $image4, 'writing4' => $writing4,
-             'image5' => $image5, 'writing5' => $writing5,
-             'image6' => $image6, 'writing6' => $writing6,
-             'image7' => $image7, 'writing7' => $writing7,
-             'image8' => $image8, 'writing8' => $writing8,
-             'image9' => $image9, 'writing9' => $writing9,
-             'image10' => $image10, 'writing10' => $writing10,
-             'slug' => $slug
-             ]);
-             if($result){
+            if($result){
                  return ['result' => true];
-             }else{
-                 return ['result' => false];
-             }
+            }else{
+                return ['result' => false];
+            }
         }
-
-        
     }
   
 }

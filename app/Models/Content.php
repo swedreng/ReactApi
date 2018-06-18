@@ -22,6 +22,10 @@ class Content extends Model {
     ];
     
 
+    public function Images() {
+      return $this->hasMany('App\Models\ContentImage', 'contents_id' , 'contents_id');
+    }
+
     public function getImage1Attribute($image1){
         if($image1 == 'Doldurulmamıs'){
             return null;
