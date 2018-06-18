@@ -147,7 +147,16 @@ class PostController extends Controller {
         $model = new Posts;
         $link = $request->input('link');
         $write = $request->input('write');
-        $linkExplode = explode ("=",$link);
+        if(strstr($link, "youtu.be/")){
+            $linkExplode = explode ("youtu.be/",$link);
+        }else if(strstr($link, "youtu.be")){
+            $linkExplode = explode ("=",$link);
+            $linkExplode = explode ("&",$linkExplode[1]);
+            $linkExplode[1] = $linkExplode[0];
+        }else{
+            $linkExplode = explode ("=",$link);
+        }
+        
         $user = JWTAuth::parseToken()->authenticate();
 
         if($user->rank == 1){
