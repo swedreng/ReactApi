@@ -278,6 +278,7 @@ class NoLoginMainController extends Controller {
         $event = $request->input('event');
         $value = $request->input('value');
         $model = new Content;
+        $model = $model->with('images');
         $query = $model->orderBy('contents_id','desc')->skip($value)->take(3)->get();
         $count = $model->get();
         $contentCount = count($count);
@@ -288,7 +289,8 @@ class NoLoginMainController extends Controller {
     public function getContentDetail(Request $request){
         $content_id = $request->input('content_id');
         $model = new Content;
-        $query = $model->where('contents_id','=',$content_id)->orWhere('slug', '=', $content_id)->get();
+        $model = $model->with('images');
+        $query = $model->where('contents_id','=',$content_id)->orWhere('slug', '=', $content_id)->get()->first();
         return $query;
     }
 }
